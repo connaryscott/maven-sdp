@@ -1,0 +1,58 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- third-party sdp module -->
+  <parent>
+    <groupId>com.dtolabs.sdp</groupId>
+    <artifactId>dtolabs-sdp</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+
+  <groupId>com.dtolabs.sdp.third-party</groupId>
+  <artifactId>dtolabs-sdp-thirdparty</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <name>DTO :: sdp :: thirdparty :: pom</name>
+
+  <modules>
+  <!--
+     <module>activemq</module>
+     <module>activemq-info-provider</module>
+     -->
+     <module>apache-maven</module>
+     <!--
+     <module>facter</module>
+     <module>hiera</module>
+     <module>jdk</module>
+     <module>jenkins</module>
+     <module>mcollective</module>
+     <module>mcollective-client</module>
+     <module>mcollective-common</module>
+     <module>mongo-10gen</module>
+     <module>mongo-10gen-server</module>
+     <module>p4</module>
+     <module>puppet</module>
+     <module>puppet-server</module>
+     <module>ruby-augeas</module>
+     <module>rubygem-json</module>
+     <module>rubygems</module>
+     <module>ruby-json</module>
+     <module>ruby-shadow</module>
+     <module>rundeck</module>
+     <module>rundeck-config</module>
+     <module>tanukiwrapper</module>
+     -->
+  </modules>
+
+
+
+
+
+
+  <scm>
+    <connection>scm:p4:perforce.dev://internal/maven-sdp/main/third-party/</connection>
+    <developerConnection>scm:p4:perforce.dev://internal/maven-sdp/main/third-party/</developerConnection>
+  </scm>
+
+</project>

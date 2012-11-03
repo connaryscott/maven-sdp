@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- top level SDP module -->
+
+  <groupId>com.dtolabs.sdp</groupId>
+  <artifactId>dtolabs-sdp</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>DTO :: sdp :: parent :: pom</name>
+
+  <properties>
+      <codehaus.plugin.rpm.version>2.1-alpha-2</codehaus.plugin.rpm.version>
+  </properties>
+
+  <profiles>
+     <profile>
+        <id>development</id>
+        <activation>
+           <activeByDefault>true</activeByDefault>
+           <property>
+              <name>sdp.environment</name>
+              <value>development</value>
+           </property>
+        </activation>
+        <properties>
+           <sdp.environment>development</sdp.environment>
+           <sdp.distribution.host>localhost</sdp.distribution.host>
+        </properties>
+
+     </profile>
+
+
+  </profiles>
+
+<!--
+  future sub modules
+  <modules>
+     <module>libraries</module>
+     <module>roles</module>
+     <module>configs</module>
+     <module>repos</module>
+     <module>nodes</module>
+     <module>jobs</module>
+  </modules>
+-->
+
+
+  <build>
+
+    <pluginManagement>
+      <plugins>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>rpm-maven-plugin</artifactId>
+          <version>${codehaus.plugin.rpm.version}</version>
+          <extensions>true</extensions>
+          <configuration>
+            <copyright>Stubhub 2012</copyright>
+            <group>StubHub/Applications</group>
+            <needarch>noarch</needarch>
+            <preinstallScriptlet>
+              <scriptFile>src/main/scripts/preinstall.sh</scriptFile>
+              <fileEncoding>utf-8</fileEncoding>
+            </preinstallScriptlet>
+            <postinstallScriptlet>
+              <scriptFile>src/main/scripts/postinstall.sh</scriptFile>
+              <fileEncoding>utf-8</fileEncoding>
+            </postinstallScriptlet>
+            <preremoveScriptlet>
+              <scriptFile>src/main/scripts/preremove.sh</scriptFile>
+              <fileEncoding>utf-8</fileEncoding>
+            </preremoveScriptlet>
+          </configuration>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+
+      <extensions>
+         <extension>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>rpm-maven-plugin</artifactId>
+         </extension>
+       </extensions>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp.git</developerConnection>
+  </scm>
+
+</project> 

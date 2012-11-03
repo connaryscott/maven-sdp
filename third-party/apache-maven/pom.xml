@@ -1,0 +1,140 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+    <groupId>com.dtolabs.sdp.third-party</groupId>
+    <artifactId>dtolabs-sdp-thirdparty</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <groupId>org.apache.maven</groupId>
+  <artifactId>apache-maven</artifactId>
+  <version>3.0.4</version>
+  <packaging>rpm</packaging>
+  <name>Stubhub :: apache :: maven :: rpm</name>
+
+
+  <properties>
+    <!-- properties referring to the actual nexus distribution that we are converting to an rpm -->
+          <codehaus.plugin.rpm.version>2.1-alpha-2</codehaus.plugin.rpm.version>
+          <maven.plugin.dependency.version>2.4</maven.plugin.dependency.version>
+          <codehaus.plugin.exec.version>1.2.1</codehaus.plugin.exec.version>
+
+    <install.package.name>apache-maven</install.package.name>
+    <install.package.version>3.0.4</install.package.version>
+    <install.package.type>tgz</install.package.type>
+
+    <maven.user>root</maven.user>
+    <maven.group>root</maven.group>
+    <maven.homeDir>/opt/${install.package.name}-${install.package.version}</maven.homeDir>
+
+    <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
+    <rpm.version>${project.version}</rpm.version>
+
+     <!-- rpm.release is not set and will default to the value of 1 for versioned releases.   We should not use rpm.release for SNAPSHOTS as it will 
+          remove the SNAPSHOT behavior when producing the versioned rpm -->
+    <arch>noarch</arch>
+  </properties>
+
+  <build>
+
+    <outputDirectory>target/rpm</outputDirectory>
+
+    <plugins>
+
+
+      <!--
+        we simply extract committed tgz to a location for rpm to package it.
+      -->
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>extract-source</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>bash</executable>
+          <arguments>
+            <argument>-c</argument>
+            <argument>mkdir -p target/resources; tar -C ${basedir}/target/resources -zxf ${basedir}/SOURCES/${install.package.name}-${install.package.version}-bin.tar.gz</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+ 
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+
+          <version>${rpm.version}</version>
+
+          <release>6</release>
+
+          <needarch>${arch}</needarch>
+
+          <provides>
+            <provide>${install.package.name} = ${install.package.version}</provide>
+          </provides>
+
+          <requires>
+            <require>java-devel</require>
+            <require>rpm-build</require>
+            <require>createrepo</require>
+          </requires>
+
+          <mappings>
+            <mapping>
+              <directory>${maven.homeDir}</directory>
+              <directoryIncluded>true</directoryIncluded>
+              <recurseDirectories>true</recurseDirectories>
+              <sources>
+                <source>
+                  <location>target/resources/${install.package.name}-${install.package.version}</location>
+                  <excludes>
+                     <exclude>bin</exclude>
+                     <exclude>bin/**</exclude>
+                  </excludes>
+                </source>
+              </sources>
+              <username>${maven.user}</username>
+              <groupname>${maven.group}</groupname>
+            </mapping>
+            <mapping>
+              <directory>${maven.homeDir}/bin</directory>
+              <directoryIncluded>true</directoryIncluded>
+              <sources>
+                <source>
+                  <location>target/resources/${install.package.name}-${install.package.version}/bin</location>
+                  <includes>
+                     <include>*</include>
+                  </includes>
+                </source>
+              </sources>
+              <username>${maven.user}</username>
+              <groupname>${maven.group}</groupname>
+              <filemode>755</filemode>
+            </mapping>
+          </mappings>
+        </configuration>
+      </plugin>
+
+
+    </plugins>
+
+  </build>
+
+
+  <scm>
+    <connection>scm:p4:perforce.dev://internal/chainsaw/main/third-party/apache-maven/</connection>
+    <developerConnection>scm:p4:perforce.dev://internal/chainsaw/main/third-party/apache-maven/</developerConnection>
+  </scm>
+
+</project>
