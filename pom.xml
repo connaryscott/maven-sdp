@@ -57,8 +57,8 @@
           <version>${codehaus.plugin.rpm.version}</version>
           <extensions>true</extensions>
           <configuration>
-            <copyright>Stubhub 2012</copyright>
-            <group>StubHub/Applications</group>
+            <copyright>XXX</copyright>
+            <group>YYY</group>
             <needarch>noarch</needarch>
             <preinstallScriptlet>
               <scriptFile>src/main/scripts/preinstall.sh</scriptFile>

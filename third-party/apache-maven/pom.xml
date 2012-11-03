@@ -11,7 +11,7 @@
   <artifactId>apache-maven</artifactId>
   <version>3.0.4</version>
   <packaging>rpm</packaging>
-  <name>Stubhub :: apache :: maven :: rpm</name>
+  <name>DTO :: apache :: maven :: rpm</name>
 
 
   <properties>
