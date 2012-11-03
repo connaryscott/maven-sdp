@@ -76,7 +76,7 @@
 
           <version>${rpm.version}</version>
 
-          <release>6</release>
+          <release>1</release>
 
           <needarch>${arch}</needarch>
 
