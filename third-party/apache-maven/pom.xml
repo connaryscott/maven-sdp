@@ -11,7 +11,7 @@
   <artifactId>apache-maven</artifactId>
   <version>3.0.4</version>
   <packaging>rpm</packaging>
-  <name>DTO :: apache :: maven :: rpm</name>
+  <name>DTO :: thirdparty :: apache-maven :: rpm</name>
 
 
   <properties>
@@ -133,8 +133,8 @@
 
 
   <scm>
-    <connection>scm:p4:perforce.dev://internal/chainsaw/main/third-party/apache-maven/</connection>
-    <developerConnection>scm:p4:perforce.dev://internal/chainsaw/main/third-party/apache-maven/</developerConnection>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/third-party/apache-maven.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/third-party/apache-maven.git</developerConnection>
   </scm>
 
 </project>

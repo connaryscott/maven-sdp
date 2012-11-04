@@ -24,8 +24,10 @@
      <!--
      <module>facter</module>
      <module>hiera</module>
+       -->
      <module>jdk</module>
      <module>jenkins</module>
+     <!--
      <module>mcollective</module>
      <module>mcollective-client</module>
      <module>mcollective-common</module>
@@ -51,8 +53,8 @@
 
 
   <scm>
-    <connection>scm:p4:perforce.dev://internal/maven-sdp/main/third-party/</connection>
-    <developerConnection>scm:p4:perforce.dev://internal/maven-sdp/main/third-party/</developerConnection>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/third-party.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/third-party.git</developerConnection>
   </scm>
 
 </project>
