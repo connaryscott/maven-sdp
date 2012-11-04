@@ -33,17 +33,16 @@
 
   </profiles>
 
-<!--
-  future sub modules
   <modules>
      <module>libraries</module>
      <module>roles</module>
+<!--
      <module>configs</module>
      <module>repos</module>
      <module>nodes</module>
      <module>jobs</module>
-  </modules>
 -->
+  </modules>
 
 
   <build>
