@@ -1,0 +1,118 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+     <groupId>com.dtolabs.sdp.libs</groupId>
+     <artifactId>dtolabs-sdp-libs</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+
+  <artifactId>dtolabs-sdp-libs-jenkins-plugins</artifactId>
+  <packaging>rpm</packaging>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>Stubhub :: sdp :: libraries :: jenkins-plugins</name>
+
+  <properties>
+    <!-- properties referring to the actual jenkins distribution that we are converting to an rpm -->
+
+    <jenkins.name>jenkins</jenkins.name>
+    <jenkins.version.min>1.483-1.1</jenkins.version.min>
+    <jenkins.user>jenkins</jenkins.user>
+    <jenkins.group>jenkins</jenkins.group>
+
+    <!-- default location of the jenkins home directory -->
+    <jenkins.homeDir>/var/lib/jenkins</jenkins.homeDir>
+
+    <!-- 
+       List of Plugins we have downloaded into the SOURCES/plugins directory.  They are stored in source control as:
+
+            Download: http://mirrors.jenkins-ci.org/plugins/<PLUGIN_NAME>/<PLUGIN_VERSION>/<PLUGIN_NAME>.hpi
+            as:  SOURCES/plugins/<PLUGIN_NAME>-<PLUGIN_VERSION>.hpi
+
+            The maven resources plugin will ensure they are packaged as:  ${jenkins.homeDir}}/plugins/<PLUGIN_NAME>.hpi per jenkins requirement.
+
+         The following versioned plugins are downloaded from jenkins plugin site:
+
+         build-metrics: http://mirrors.jenkins-ci.org/plugins/build-metrics/1.0/build-metrics.hpi
+         clover: http://mirrors.jenkins-ci.org/plugins/clover/4.0.6/clover.hpi
+         config-file-provider: http://mirrors.jenkins-ci.org/plugins/config-file-provider/2.2.1/config-file-provider.hpi
+         git: http://mirrors.jenkins-ci.org/plugins/git/1.1.23/git.hpi
+         global-build-stats: http://mirrors.jenkins-ci.org/plugins/global-build-stats/1.3/global-build-stats.hpi
+         groovy: http://mirrors.jenkins-ci.org/plugins/groovy/1.12/groovy.hpi
+         groovy-postbuild: http://mirrors.jenkins-ci.org/plugins/groovy-postbuild/1.8/groovy-postbuild.hpi
+         monitoring: http://mirrors.jenkins-ci.org/plugins/monitoring/1.40.0/monitoring.hpi
+         m2release: http://mirrors.jenkins-ci.org/plugins/m2release/0.9.1/m2release.hpi
+         perforce: http://mirrors.jenkins-ci.org/plugins/perforce/1.3.17/perforce.hpi
+         publish-over-ssh: http://mirrors.jenkins-ci.org/plugins/publish-over-ssh/1.8/publish-over-ssh.hpi
+         repository: http://mirrors.jenkins-ci.org/plugins/repository/0.9/repository.hpi
+         rundeck: http://mirrors.jenkins-ci.org/plugins/rundeck/2.11/rundeck.hpi
+         sonar: http://mirrors.jenkins-ci.org/plugins/sonar/1.8/sonar.hpi
+         ssh: http://mirrors.jenkins-ci.org/plugins/ssh/2.3/ssh.hpi
+         thinBackup: http://mirrors.jenkins-ci.org/plugins/thinBackup/1.6.2/thinBackup.hpi
+         testng-plugin: http://mirrors.jenkins-ci.org/plugins/testng-plugin/0.32/testng-plugin.hpi
+     -->
+
+    <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
+    <rpm.version>${project.version}</rpm.version>
+
+     <!-- rpm.release is not set and will default to the value of 1 for versioned releases.   We should not use rpm.release for SNAPSHOTS as it will 
+          remove the SNAPSHOT behavior when producing the versioned rpm -->
+    <arch>noarch</arch>
+  </properties>
+
+  <build>
+
+    <outputDirectory>target/rpm</outputDirectory>
+
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+
+          <!-- defaults to rpm.version property in properties section, may be overridden by external mvn property -->
+          <version>${rpm.version}</version>
+
+          <!-- 
+            if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+            if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+            Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+            and mimics a versioned
+            release.
+            -->
+          <release>${rpm.release}</release>
+
+          <!-- ensure package is noarch -->
+          <needarch>${arch}</needarch>
+
+
+          <requires>
+            <require>jenkins &gt;= ${jenkins.version.min}</require>
+          </requires>
+
+          <mappings>
+             <!-- map plugins to the official jenkins plugins directory -->
+             <mapping>
+                <directory>${jenkins.homeDir}/plugins</directory>
+                <sources>
+                  <source>
+                    <location>SOURCES/plugins</location>
+                </source>
+              </sources>
+              <username>${jenkins.user}</username>
+              <groupname>${jenkins.group}</groupname>
+              <filemode>755</filemode>
+             </mapping>
+          </mappings>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/libraries/jenkins-plugins.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/libraries/jenkins-plugins.git</developerConnection>
+  </scm>
+
+</project>

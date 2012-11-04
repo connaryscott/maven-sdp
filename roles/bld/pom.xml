@@ -1,0 +1,87 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+     <groupId>com.dtolabs.sdp.roles</groupId>
+     <artifactId>dtolabs-sdp-roles</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dtolabs-sdp-roles-bld</artifactId>
+  <packaging>rpm</packaging>
+  <name>DTO :: sdp :: roles :: bld</name>
+
+  <properties>
+
+    <!-- this is the version of jenkins distribution that we depend on -->
+    <package.jenkins.name>jenkins</package.jenkins.name>
+    <package.jenkins.version>1.483-1.1</package.jenkins.version>
+
+    <package.jenkins.plugins.name>dtolabs-sdp-libs-jenkins-plugins</package.jenkins.plugins.name>
+    <package.jenkins.plugins.version>${project.version}</package.jenkins.plugins.version>
+    <package.apache-maven.name>apache-maven</package.apache-maven.name>
+
+    <package.jdk.name>jdk</package.jdk.name>
+    <package.jdk.version>1.6.0_24</package.jdk.version>
+
+      <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
+    <rpm.version>${project.version}</rpm.version>
+
+      <!-- rpm.release is not set and will default to the value of 1 for versioned releases.   We should not use rpm.release for SNAPSHOTS as it will 
+          remove the SNAPSHOT behavior when producing the versioned rpm -->
+    <arch>noarch</arch>
+
+  </properties>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+
+          <!-- defaults to rpm.version property in properties section, may be overridden by external mvn property -->
+          <version>${rpm.version}</version>
+
+          <!-- 
+            if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+            if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+            Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+            and mimics a versioned
+            release.
+            -->
+          <release>${rpm.release}</release>
+
+          <!-- ensure package is noarch -->
+          <needarch>${arch}</needarch>
+
+          <!-- we are proxing https requests to jenkins, therefore we need apache's mod_ssl -->
+          <requires>
+            <require>${package.jenkins.name} = ${package.jenkins.version}</require>
+            <require>${package.jenkins.plugins.name}</require>
+            <require>${package.apache-maven.name}</require>
+            <require>${package.jdk.name} = ${package.jdk.version}</require>
+            <require>git</require>
+            <require>mod_ssl</require>
+          </requires>
+
+          <mappings>
+             <!-- map the apache proxy configuration -->
+             <mapping>
+                <directory>/tmp</directory>
+                <directoryIncluded>false</directoryIncluded>
+             </mapping>
+          </mappings>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/roles/bld.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/roles/bld.git</developerConnection>
+  </scm>
+
+</project>

@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.dtolabs.sdp</groupId>
+    <artifactId>dtolabs-sdp</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+
+  <groupId>com.dtolabs.sdp.roles</groupId>
+  <artifactId>dtolabs-sdp-roles</artifactId>
+  <packaging>pom</packaging>
+  <name>DTO :: sdp :: roles :: pom</name>
+
+  <modules>
+     <module>bld</module>
+  </modules>
+
+
+
+
+
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/roles.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/roles.git</developerConnection>
+  </scm>
+
+</project>
