@@ -12,6 +12,9 @@
   <properties>
       <codehaus.plugin.rpm.version>2.1-alpha-2</codehaus.plugin.rpm.version>
       <maven.plugin.antrun.version>1.7</maven.plugin.antrun.version>
+      <maven.plugin.resources.version>2.5</maven.plugin.resources.version>
+      <codehaus.plugin.exec.version>1.2.1</codehaus.plugin.exec.version>
+      <maven.plugin.enforcer.version>1.1.1</maven.plugin.enforcer.version>
   </properties>
 
   <profiles>
@@ -81,6 +84,27 @@
           <version>${maven.plugin.antrun.version}</version>
         </plugin>
 
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven.plugin.resources.version}</version>
+          <configuration>
+            <encoding>UTF-8</encoding>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${codehaus.plugin.exec.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>${maven.plugin.enforcer.version}</version>
+        </plugin>
+
       </plugins>
     </pluginManagement>
 
@@ -91,6 +115,19 @@
          </extension>
        </extensions>
   </build>
+
+        <distributionManagement>
+                  <repository>
+                          <id>sdp-releases</id>
+                          <name>Stubhub Chainsaw release Repository</name>
+                          <url>https://${sdp.distribution.host}/nexus/content/repositories/sdp-releases/</url>
+                  </repository>
+                  <snapshotRepository>
+                          <id>sdp-snapshots</id>
+                          <name>Stubhub Chainsaw snapshot Repository</name>
+                          <url>https://${sdp.distribution.host}/nexus/content/repositories/sdp-snapshots/</url>
+                  </snapshotRepository>
+        </distributionManagement>
 
   <scm>
     <connection>scm:git:git@github.com:connaryscott/maven-sdp.git</connection>

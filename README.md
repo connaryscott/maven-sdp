@@ -3,7 +3,20 @@ maven-sdp
 
 a reference implementation of a service delivery platform using maven
 
-this implementation is based on recent implementations using best maven practices for building and deploying an SDP using maven build and a maven repository.
+this implementation is based on recent implementations using best maven practices for building and deploying an SDP using maven and a maven repository.
+
+Requirements:
+
+CentOS 6.2 is assumed
+
+centos-release-6-2.el6.centos.7.x86_64 and its default enabled yum repos (/etc/yum.repos.d/CentOS-Base.repo)
+
+apache-maven 3.0.4
+   NOTE:  an apache-maven rpm is supplied for convenience
+
+git
+
+java openjdk-devel
 
 
 Install apache-maven package using the yum localinstall in order to bootstrap all necessary dependencies
@@ -183,7 +196,14 @@ Dependency Installed:
 Dependency Updated:
   rpm.x86_64 0:4.8.0-27.el6                                    rpm-libs.x86_64 0:4.8.0-27.el6                                    rpm-python.x86_64 0:4.8.0-27.el6                                   
 
+
 Complete!
+
+
+Install a development Maven settings configuration, located in the tools/maven directory:
+
+[chuck@mvn-sdp-0 maven-sdp]$ mkdir -p $HOME/.m2
+[chuck@mvn-sdp-0 maven-sdp]$ cp tools/maven/settings-development.xml $HOME/.m2/settings.xml 
 
 
 Configure bashrc
@@ -201,3 +221,421 @@ export M2_HOME=/opt/apache-maven-3.0.4
 export JAVA_HOME=/usr/lib/jvm/java-1.6.0-openjdk.x86_64
 
 export PATH=${M2_HOME}/bin:$PATH
+
+Build and Install all roles, configurations, and other dependencies from the top level build module
+
+[chuck@mvn-sdp-0 maven-sdp]$ mvn clean install
+...
+...
+
+
+
+Bootstrap the Nexus Server 
+
+Install the Development Repository Role (drp) Package
+
+[chuck@mvn-sdp-0 maven-sdp]$ sudo yum --nogpgcheck localinstall roles/drp/target/rpm/dtolabs-sdp-roles-drp-rpm/RPMS/x86_64/dtolabs-sdp-roles-drp-rpm-*.rpm
+
+
+Install the development drp configuration
+
+[chuck@mvn-sdp-0 maven-sdp]$ sudo yum -y --nogpgcheck localinstall configs/drp/development/target/rpm/dtolabs-sdp-cfg-drp-development-rpm/RPMS/noarch/dtolabs-sdp-cfg-drp-development-rpm-*.rpm
+
+Failed to set locale, defaulting to C
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Setting up Local Package Process
+Examining configs/drp/development/target/rpm/dtolabs-sdp-cfg-drp-development-rpm/RPMS/noarch/dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch.rpm: dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch
+Marking configs/drp/development/target/rpm/dtolabs-sdp-cfg-drp-development-rpm/RPMS/noarch/dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch.rpm to be installed
+Loading mirror speeds from cached hostfile
+ * base: mirror.ncsa.illinois.edu
+ * extras: mirrors.tummy.com
+ * updates: mirrors.gigenet.com
+Resolving Dependencies
+--> Running transaction check
+---> Package dtolabs-sdp-cfg-drp-development-rpm.noarch 0:1.0.0-SNAPSHOT20121106220658 will be installed
+--> Processing Dependency: mod_ssl for package: dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch
+--> Running transaction check
+---> Package mod_ssl.x86_64 1:2.2.15-15.el6.centos.1 will be installed
+--> Processing Dependency: httpd = 2.2.15-15.el6.centos.1 for package: 1:mod_ssl-2.2.15-15.el6.centos.1.x86_64
+--> Running transaction check
+---> Package httpd.x86_64 0:2.2.15-15.el6.centos will be updated
+---> Package httpd.x86_64 0:2.2.15-15.el6.centos.1 will be an update
+--> Processing Dependency: httpd-tools = 2.2.15-15.el6.centos.1 for package: httpd-2.2.15-15.el6.centos.1.x86_64
+--> Running transaction check
+---> Package httpd-tools.x86_64 0:2.2.15-15.el6.centos will be updated
+---> Package httpd-tools.x86_64 0:2.2.15-15.el6.centos.1 will be an update
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+====================================================================================================================================================================================================
+ Package                                        Arch              Version                                 Repository                                                                           Size
+====================================================================================================================================================================================================
+Installing:
+ dtolabs-sdp-cfg-drp-development-rpm            noarch            1.0.0-SNAPSHOT20121106220658            /dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch             24 k
+Installing for dependencies:
+ mod_ssl                                        x86_64            1:2.2.15-15.el6.centos.1                base                                                                                 87 k
+Updating for dependencies:
+ httpd                                          x86_64            2.2.15-15.el6.centos.1                  base                                                                                813 k
+ httpd-tools                                    x86_64            2.2.15-15.el6.centos.1                  base                                                                                 70 k
+
+Transaction Summary
+====================================================================================================================================================================================================
+Install       2 Package(s)
+Upgrade       2 Package(s)
+
+Total size: 993 k
+Total download size: 969 k
+Is this ok [y/N]: N
+Exiting on user Command
+[chuck@mvn-sdp-0 maven-sdp]$ sudo yum -y --nogpgcheck localinstall configs/drp/development/target/rpm/dtolabs-sdp-cfg-drp-development-rpm/RPMS/noarch/dtolabs-sdp-cfg-drp-development-rpm-*.rpm
+Failed to set locale, defaulting to C
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Setting up Local Package Process
+Examining configs/drp/development/target/rpm/dtolabs-sdp-cfg-drp-development-rpm/RPMS/noarch/dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch.rpm: dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch
+Marking configs/drp/development/target/rpm/dtolabs-sdp-cfg-drp-development-rpm/RPMS/noarch/dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch.rpm to be installed
+Loading mirror speeds from cached hostfile
+ * base: mirror.ncsa.illinois.edu
+ * extras: mirrors.tummy.com
+ * updates: mirrors.gigenet.com
+Resolving Dependencies
+--> Running transaction check
+---> Package dtolabs-sdp-cfg-drp-development-rpm.noarch 0:1.0.0-SNAPSHOT20121106220658 will be installed
+--> Processing Dependency: mod_ssl for package: dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch
+--> Running transaction check
+---> Package mod_ssl.x86_64 1:2.2.15-15.el6.centos.1 will be installed
+--> Processing Dependency: httpd = 2.2.15-15.el6.centos.1 for package: 1:mod_ssl-2.2.15-15.el6.centos.1.x86_64
+--> Running transaction check
+---> Package httpd.x86_64 0:2.2.15-15.el6.centos will be updated
+---> Package httpd.x86_64 0:2.2.15-15.el6.centos.1 will be an update
+--> Processing Dependency: httpd-tools = 2.2.15-15.el6.centos.1 for package: httpd-2.2.15-15.el6.centos.1.x86_64
+--> Running transaction check
+---> Package httpd-tools.x86_64 0:2.2.15-15.el6.centos will be updated
+---> Package httpd-tools.x86_64 0:2.2.15-15.el6.centos.1 will be an update
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+====================================================================================================================================================================================================
+ Package                                        Arch              Version                                 Repository                                                                           Size
+====================================================================================================================================================================================================
+Installing:
+ dtolabs-sdp-cfg-drp-development-rpm            noarch            1.0.0-SNAPSHOT20121106220658            /dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch             24 k
+Installing for dependencies:
+ mod_ssl                                        x86_64            1:2.2.15-15.el6.centos.1                base                                                                                 87 k
+Updating for dependencies:
+ httpd                                          x86_64            2.2.15-15.el6.centos.1                  base                                                                                813 k
+ httpd-tools                                    x86_64            2.2.15-15.el6.centos.1                  base                                                                                 70 k
+
+Transaction Summary
+====================================================================================================================================================================================================
+Install       2 Package(s)
+Upgrade       2 Package(s)
+
+Total size: 993 k
+Total download size: 969 k
+Downloading Packages:
+(1/3): httpd-2.2.15-15.el6.centos.1.x86_64.rpm                                                                                                                               | 813 kB     00:07     
+(2/3): httpd-tools-2.2.15-15.el6.centos.1.x86_64.rpm                                                                                                                         |  70 kB     00:00     
+(3/3): mod_ssl-2.2.15-15.el6.centos.1.x86_64.rpm                                                                                                                             |  87 kB     00:00     
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Total                                                                                                                                                                97 kB/s | 969 kB     00:10     
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Updating   : httpd-tools-2.2.15-15.el6.centos.1.x86_64                                                                                                                                        1/6 
+  Updating   : httpd-2.2.15-15.el6.centos.1.x86_64                                                                                                                                              2/6 
+  Installing : 1:mod_ssl-2.2.15-15.el6.centos.1.x86_64                                                                                                                                          3/6 
+  Installing : dtolabs-sdp-cfg-drp-development-rpm-1.0.0-SNAPSHOT20121106220658.noarch                                                                                                          4/6 
+  Cleanup    : httpd-2.2.15-15.el6.centos.x86_64                                                                                                                                                5/6 
+  Cleanup    : httpd-tools-2.2.15-15.el6.centos.x86_64                                                                                                                                          6/6 
+
+Installed:
+  dtolabs-sdp-cfg-drp-development-rpm.noarch 0:1.0.0-SNAPSHOT20121106220658                                                                                                                         
+
+Dependency Installed:
+  mod_ssl.x86_64 1:2.2.15-15.el6.centos.1                                                                                                                                                           
+
+Dependency Updated:
+  httpd.x86_64 0:2.2.15-15.el6.centos.1                                                         httpd-tools.x86_64 0:2.2.15-15.el6.centos.1                                                        
+
+Complete!
+
+
+Start the drp role/nexus service and (re)start the apache-server
+
+[chuck@mvn-sdp-0 maven-sdp]$ sudo service nexus start
+Starting Nexus OSS...
+Started Nexus OSS.
+[chuck@mvn-sdp-0 maven-sdp]$ sudo service httpd restart
+Stopping httpd:                                            [  OK  ]
+Starting httpd: httpd: Could not reliably determine the server's fully qualified domain name, using mvn-sdp-0.local for ServerName
+                                                           [  OK  ]
+
+Execute post nexus configurations using the nexus tools script, configureNexus.sh, which will create needed repositories, repo groups, and adjust the baseUrl and forceBaseUrl settings
+
+
+[chuck@mvn-sdp-0 nexus]$ cd tools/nexus
+[chuck@mvn-sdp-0 nexus]$ ./configureNexus.sh 
+retrieving settings from:  https://mvn-sdp-0.local/nexus/service/local/global_settings/current
+adjusting forceBaseUrl and baseUrl
+posting new settings to:  https://mvn-sdp-0.local/nexus/service/local/global_settings/current
+created repository: sdp-snapshots
+created repository: sdp-thirdparty
+created repository: sdp-releases
+created repository: stubhub-releases
+created repository: stubhub-snapshots
+created group: sdp-public-snapshots
+created group: sdp-public
+created group: stubhub-public
+created group: stubhub-public-snapshots
+
+
+
+Upload the third-party dependencies to the Maven Repository:
+
+
+[chuck@mvn-sdp-0 maven-sdp]$ cd third-party/
+[chuck@mvn-sdp-0 third-party]$ mvn clean deploy
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for org.apache.maven:apache-maven:rpm:3.0.4
+[WARNING] 'build.plugins.plugin.version' for org.codehaus.mojo:exec-maven-plugin is missing. @ line 51, column 15
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for org.rubygems:rubygems:pom:1.8.11-3.fc16.1.noarch
+[WARNING] 'build.plugins.plugin.version' for org.codehaus.mojo:build-helper-maven-plugin is missing. @ line 22, column 16
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] DTO :: sdp :: sdp-thirdparty :: pom
+[INFO] DTO :: thirdparty :: activemq :: rpm
+[INFO] DTO :: thirdparty :: activemq-info-provider :: rpm
+[INFO] DTO :: apache :: maven :: rpm
+[INFO] DTO :: thirdparty :: puppet :: rpm
+[INFO] DTO :: thirdparty :: hiera :: rpm
+[INFO] DTO :: thirdparty :: jdk :: rpm
+[INFO] DTO :: thirdparty :: jenkins :: rpm
+[INFO] DTO :: thirdparty :: activemq :: rpm
+[INFO] DTO :: thirdparty :: mcollective-client :: rpm
+[INFO] DTO :: thirdparty :: activemq :: rpm
+[INFO] DTO :: thirdparty :: activemq :: rpm
+[INFO] DTO :: thirdparty :: activemq :: rpm
+[INFO] DTO :: thirdparty :: p4 :: rpm
+[INFO] DTO :: thirdparty :: puppet :: rpm
+[INFO] DTO :: thirdparty :: puppet-server :: rpm
+[INFO] DTO :: thirdparty :: ruby-augeas :: rpm
+[INFO] DTO :: thirdparty :: ruby-json :: rpm
+[INFO] DTO :: org :: rubygems :: rpm
+[INFO] DTO :: thirdparty :: ruby-json :: rpm
+[INFO] DTO :: thirdparty :: ruby-shadow :: rpm
+[INFO] DTO :: thirdparty :: jenkins :: rpm
+[INFO] DTO :: thirdparty :: jenkins :: rpm
+[INFO] DTO :: thirdparty :: tanukiwrapper :: rpm
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building DTO :: sdp :: sdp-thirdparty :: pom 1.1.0
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ sdp-thirdparty ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.3.1:install (default-install) @ sdp-thirdparty ---
+[INFO] Installing /home/chuck/workspace/maven-sdp/third-party/pom.xml to /home/chuck/.m2/repository/com/dtolabs/sdp/third-party/sdp-thirdparty/1.1.0/sdp-thirdparty-1.1.0.pom
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.7:deploy (default-deploy) @ sdp-thirdparty ---
+Uploading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/dtolabs/sdp/third-party/sdp-thirdparty/1.1.0/sdp-thirdparty-1.1.0.pom
+Uploaded: https://localhost/nexus/content/repositories/sdp-thirdparty/com/dtolabs/sdp/third-party/sdp-thirdparty/1.1.0/sdp-thirdparty-1.1.0.pom (3 KB at 2.3 KB/sec)
+Downloading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/dtolabs/sdp/third-party/sdp-thirdparty/maven-metadata.xml
+Uploading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/dtolabs/sdp/third-party/sdp-thirdparty/maven-metadata.xml
+Uploaded: https://localhost/nexus/content/repositories/sdp-thirdparty/com/dtolabs/sdp/third-party/sdp-thirdparty/maven-metadata.xml (321 B at 3.9 KB/sec)
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building DTO :: thirdparty :: activemq :: rpm 5.5.0-1.el6.noarch
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ activemq ---
+[INFO] 
+[INFO] --- build-helper-maven-plugin:1.7:attach-artifact (rpm) @ activemq ---
+[INFO] 
+[INFO] --- maven-install-plugin:2.3.1:install (default-install) @ activemq ---
+[INFO] Installing /home/chuck/workspace/maven-sdp/third-party/activemq/pom.xml to /home/chuck/.m2/repository/com/puppetlabs/activemq/5.5.0-1.el6.noarch/activemq-5.5.0-1.el6.noarch.pom
+[INFO] Installing /home/chuck/workspace/maven-sdp/third-party/activemq/SOURCES/activemq-5.5.0-1.el6.noarch.rpm to /home/chuck/.m2/repository/com/puppetlabs/activemq/5.5.0-1.el6.noarch/activemq-5.5.0-1.el6.noarch.rpm
+[INFO] 
+[INFO] --- maven-deploy-plugin:2.7:deploy (default-deploy) @ activemq ---
+Uploading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/activemq/5.5.0-1.el6.noarch/activemq-5.5.0-1.el6.noarch.pom
+Uploaded: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/activemq/5.5.0-1.el6.noarch/activemq-5.5.0-1.el6.noarch.pom (2 KB at 9.7 KB/sec)
+Downloading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/activemq/maven-metadata.xml
+Uploading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/activemq/maven-metadata.xml
+Uploaded: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/activemq/maven-metadata.xml (328 B at 4.1 KB/sec)
+Uploading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/activemq/5.5.0-1.el6.noarch/activemq-5.5.0-1.el6.noarch.rpm
+Uploaded: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/activemq/5.5.0-1.el6.noarch/activemq-5.5.0-1.el6.noarch.rpm (19738 KB at 2687.2 KB/sec)
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building DTO :: thirdparty :: activemq-info-provider :: rpm 5.5.0-1.el6.noarch
+[INFO] ------------------------------------------------------------------------
+...
+...
+...
+[INFO] --- maven-deploy-plugin:2.7:deploy (default-deploy) @ tanukiwrapper ---
+Uploading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/tanukiwrapper/3.5.9-1.el6.x86_64/tanukiwrapper-3.5.9-1.el6.x86_64.pom
+Uploaded: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/tanukiwrapper/3.5.9-1.el6.x86_64/tanukiwrapper-3.5.9-1.el6.x86_64.pom (2 KB at 18.6 KB/sec)
+Downloading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/tanukiwrapper/maven-metadata.xml
+Uploading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/tanukiwrapper/maven-metadata.xml
+Uploaded: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/tanukiwrapper/maven-metadata.xml (333 B at 1.9 KB/sec)
+Uploading: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/tanukiwrapper/3.5.9-1.el6.x86_64/tanukiwrapper-3.5.9-1.el6.x86_64.rpm
+Uploaded: https://localhost/nexus/content/repositories/sdp-thirdparty/com/puppetlabs/tanukiwrapper/3.5.9-1.el6.x86_64/tanukiwrapper-3.5.9-1.el6.x86_64.rpm (261 KB at 1244.4 KB/sec)
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] DTO :: sdp :: sdp-thirdparty :: pom ............... SUCCESS [2.782s]
+[INFO] DTO :: thirdparty :: activemq :: rpm .............. SUCCESS [8.010s]
+[INFO] DTO :: thirdparty :: activemq-info-provider :: rpm  SUCCESS [1.331s]
+[INFO] DTO :: apache :: maven :: rpm ..................... SUCCESS [11.893s]
+[INFO] DTO :: thirdparty :: puppet :: rpm ................ SUCCESS [0.677s]
+[INFO] DTO :: thirdparty :: hiera :: rpm ................. SUCCESS [0.669s]
+[INFO] DTO :: thirdparty :: jdk :: rpm ................... SUCCESS [16.318s]
+[INFO] DTO :: thirdparty :: jenkins :: rpm ............... SUCCESS [8.146s]
+[INFO] DTO :: thirdparty :: activemq :: rpm .............. SUCCESS [0.878s]
+[INFO] DTO :: thirdparty :: mcollective-client :: rpm .... SUCCESS [0.624s]
+[INFO] DTO :: thirdparty :: activemq :: rpm .............. SUCCESS [0.637s]
+[INFO] DTO :: thirdparty :: activemq :: rpm .............. SUCCESS [7.406s]
+[INFO] DTO :: thirdparty :: activemq :: rpm .............. SUCCESS [1.227s]
+[INFO] DTO :: thirdparty :: p4 :: rpm .................... SUCCESS [1.267s]
+[INFO] DTO :: thirdparty :: puppet :: rpm ................ SUCCESS [0.876s]
+[INFO] DTO :: thirdparty :: puppet-server :: rpm ......... SUCCESS [0.645s]
+[INFO] DTO :: thirdparty :: ruby-augeas :: rpm ........... SUCCESS [0.678s]
+[INFO] DTO :: thirdparty :: ruby-json :: rpm ............. SUCCESS [0.647s]
+[INFO] DTO :: org :: rubygems :: rpm ..................... SUCCESS [0.817s]
+[INFO] DTO :: thirdparty :: ruby-json :: rpm ............. SUCCESS [0.433s]
+[INFO] DTO :: thirdparty :: ruby-shadow :: rpm ........... SUCCESS [0.468s]
+[INFO] DTO :: thirdparty :: jenkins :: rpm ............... SUCCESS [6.088s]
+[INFO] DTO :: thirdparty :: jenkins :: rpm ............... SUCCESS [0.263s]
+[INFO] DTO :: thirdparty :: tanukiwrapper :: rpm ......... SUCCESS [0.567s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 1:16.946s
+[INFO] Finished at: Tue Nov 06 14:44:34 PST 2012
+[INFO] Final Memory: 10M/24M
+[INFO] ------------------------------------------------------------------------
+
+
+Install the SDP Snapshots from the maven top level module
+
+
+[chuck@mvn-sdp-0 maven-sdp]$ mvn clean deploy
+
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO]
+[INFO] DTO :: sdp :: parent :: pom
+[INFO] DTO :: sdp :: libraries :: parent
+[INFO] DTO :: sdp :: lib :: jenkins-plugins-rpm
+[INFO] DTO :: sdp :: libraries :: mcollective-plugins
+[INFO] DTO :: sdp :: libraries :: mcollective-plugins-mcollective-plugin-mongo-discovery-rpm
+[INFO] DTO :: sdp :: libraries :: mcollective-plugins-mcollective-plugin-meta-registration-rpm
+[INFO] DTO :: sdp :: libraries :: rubygems
+[INFO] DTO :: sdp :: lib :: rubygems-rubygem-stomp-rpm
+[INFO] Stubhub :: sdp :: roles :: parent
+[INFO] DTO :: sdp :: roles :: drp-rpm
+[INFO] DTO :: sdp :: roles :: bld-rpm
+[INFO] DTO :: sdp :: roles :: dep-rpm
+[INFO] DTO :: sdp :: cfg :: parent
+[INFO] DTO :: sdp :: cfg :: drp
+[INFO] DTO :: sdp :: cfg :: drp-development-rpm
+[INFO] DTO :: sdp :: cfg :: bld
+[INFO] DTO :: sdp :: cfg :: bld-development-rpm
+[INFO] DTO :: sdp :: cfg :: dep
+[INFO] DTO :: sdp :: cfg :: dep-development-rpm
+[INFO] DTO :: sdp :: nodes :: parent
+[INFO] DTO :: sdp :: nodes :: development
+[INFO] DTO :: sdp :: nodes :: localhost-rpm
+[INFO] DTO :: sdp :: jobs :: parent
+[INFO] DTO :: sdp :: jobs :: bld-parent
+[INFO] DTO :: sdp :: jobs :: bld-sample-maven-jobs
+[INFO] DTO :: sdp :: jobs :: bld-sample-maven-jobs-sample-snapshots-rpm
+[INFO] DTO :: sdp :: jobs :: dep-parent
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building DTO :: sdp :: parent :: pom 1.0.0-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO]
+[INFO] --- maven-clean-plugin:2.4.1:clean (default-clean) @ dtolabs-sdp ---
+
+[INFO] Installing /home/chuck/workspace/maven-sdp/pom.xml to /home/chuck/.m2/repository/com/dtolabs/sdp/dtolabs-sdp/1.0.0-SNAPSHOT/dtolabs-sdp-1.0.0-SNAPSHOT.pom
+[INFO]
+[INFO] --- maven-deploy-plugin:2.7:deploy (default-deploy) @ dtolabs-sdp ---
+Downloading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/1.0.0-SNAPSHOT/maven-metadata.xml
+603/603 B   ^M            ^MDownloaded: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/1.0.0-SNAPSHOT/maven-metadata.xml (603 B at 1.2 KB/sec)
+Uploading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/1.0.0-SNAPSHOT/dtolabs-sdp-1.0.0-20121106.225524-4.pom
+2/4 KB      ^M4/4 KB   ^M         ^MUploaded: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/1.0.0-SNAPSHOT/dtolabs-sdp-1.0.0-20121106.225524-4.pom (4 KB at 42.1 KB/sec)
+Downloading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/maven-metadata.xml
+286/286 B   ^M            ^MDownloaded: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/maven-metadata.xml (286 B at 6.6 KB/sec)
+Uploading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/1.0.0-SNAPSHOT/maven-metadata.xml
+603/603 B   ^M            ^MUploaded: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/1.0.0-SNAPSHOT/maven-metadata.xml (603 B at 6.8 KB/sec)
+Uploading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/maven-metadata.xml
+286/286 B   ^M            ^MUploaded: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/dtolabs-sdp/maven-metadata.xml (286 B at 2.3 KB/sec)
+[INFO]
+[INFO] ------------------------------------------------------------------------
+
+
+
+
+...
+...
+...
+[INFO] --- maven-deploy-plugin:2.7:deploy (default-deploy) @ dtolabs-sdp-jobs-dep ---
+Downloading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/jobs/dep/dtolabs-sdp-jobs-dep/1.0.0-SNAPSHOT/maven-metadata.xml
+Uploading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/jobs/dep/dtolabs-sdp-jobs-dep/1.0.0-SNAPSHOT/dtolabs-sdp-jobs-dep-1.0.0-20121106.225143-1.pom
+Uploaded: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/jobs/dep/dtolabs-sdp-jobs-dep/1.0.0-SNAPSHOT/dtolabs-sdp-jobs-dep-1.0.0-20121106.225143-1.pom (856 B at 12.1 KB/sec)
+Downloading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/jobs/dep/dtolabs-sdp-jobs-dep/maven-metadata.xml
+Uploading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/jobs/dep/dtolabs-sdp-jobs-dep/1.0.0-SNAPSHOT/maven-metadata.xml
+Uploaded: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/jobs/dep/dtolabs-sdp-jobs-dep/1.0.0-SNAPSHOT/maven-metadata.xml (621 B at 10.5 KB/sec)
+Uploading: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/jobs/dep/dtolabs-sdp-jobs-dep/maven-metadata.xml
+Uploaded: https://localhost/nexus/content/repositories/sdp-snapshots/com/dtolabs/sdp/jobs/dep/dtolabs-sdp-jobs-dep/maven-metadata.xml (304 B at 7.2 KB/sec)
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] DTO :: sdp :: parent :: pom ....................... SUCCESS [3.409s]
+[INFO] DTO :: sdp :: libraries :: parent ................. SUCCESS [0.437s]
+[INFO] DTO :: sdp :: lib :: jenkins-plugins-rpm .......... SUCCESS [13.881s]
+[INFO] DTO :: sdp :: libraries :: mcollective-plugins .... SUCCESS [0.450s]
+[INFO] DTO :: sdp :: libraries :: mcollective-plugins-mcollective-plugin-mongo-discovery-rpm  SUCCESS [1.329s]
+[INFO] DTO :: sdp :: libraries :: mcollective-plugins-mcollective-plugin-meta-registration-rpm  SUCCESS [1.107s]
+[INFO] DTO :: sdp :: libraries :: rubygems ............... SUCCESS [0.351s]
+[INFO] DTO :: sdp :: lib :: rubygems-rubygem-stomp-rpm ... SUCCESS [8.462s]
+[INFO] Stubhub :: sdp :: roles :: parent ................. SUCCESS [1.693s]
+[INFO] DTO :: sdp :: roles :: drp-rpm .................... SUCCESS [30.522s]
+[INFO] DTO :: sdp :: roles :: bld-rpm .................... SUCCESS [2.115s]
+[INFO] DTO :: sdp :: roles :: dep-rpm .................... SUCCESS [1.530s]
+[INFO] DTO :: sdp :: cfg :: parent ....................... SUCCESS [0.622s]
+[INFO] DTO :: sdp :: cfg :: drp .......................... SUCCESS [3.583s]
+[INFO] DTO :: sdp :: cfg :: drp-development-rpm .......... SUCCESS [3.380s]
+[INFO] DTO :: sdp :: cfg :: bld .......................... SUCCESS [1.977s]
+[INFO] DTO :: sdp :: cfg :: bld-development-rpm .......... SUCCESS [2.083s]
+[INFO] DTO :: sdp :: cfg :: dep .......................... SUCCESS [2.222s]
+[INFO] DTO :: sdp :: cfg :: dep-development-rpm .......... SUCCESS [2.743s]
+[INFO] DTO :: sdp :: nodes :: parent ..................... SUCCESS [0.488s]
+[INFO] DTO :: sdp :: nodes :: development ................ SUCCESS [0.510s]
+[INFO] DTO :: sdp :: nodes :: localhost-rpm .............. SUCCESS [0.848s]
+[INFO] DTO :: sdp :: jobs :: parent ...................... SUCCESS [0.462s]
+[INFO] DTO :: sdp :: jobs :: bld-parent .................. SUCCESS [0.613s]
+[INFO] DTO :: sdp :: jobs :: bld-sample-maven-jobs ....... SUCCESS [1.226s]
+[INFO] DTO :: sdp :: jobs :: bld-sample-maven-jobs-sample-snapshots-rpm  SUCCESS [6.709s]
+[INFO] DTO :: sdp :: jobs :: dep-parent .................. SUCCESS [0.271s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 1:36.528s
+[INFO] Finished at: Tue Nov 06 14:51:43 PST 2012
+[INFO] Final Memory: 14M/34M
+[INFO] ------------------------------------------------------------------------
+
+
+
+
