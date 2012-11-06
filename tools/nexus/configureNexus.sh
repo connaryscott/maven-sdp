@@ -33,16 +33,16 @@ then
 fi
 
 
-if ! ./createRepo.sh stubhub-releases RELEASE ALLOW_WRITE_ONCE $NEXUS_URL $username $password 
+if ! ./createRepo.sh dto-releases RELEASE ALLOW_WRITE_ONCE $NEXUS_URL $username $password 
 then
-    echo "unable to create stubhub-releases" 1>&2
+    echo "unable to create dto-releases" 1>&2
     exit 1
 fi
 
 
-if ! ./createRepo.sh stubhub-snapshots SNAPSHOT ALLOW_WRITE $NEXUS_URL $username $password 
+if ! ./createRepo.sh dto-snapshots SNAPSHOT ALLOW_WRITE $NEXUS_URL $username $password 
 then
-    echo "unable to create stubhub-snapshots" 1>&2
+    echo "unable to create dto-snapshots" 1>&2
     exit 1
 fi
 
@@ -58,14 +58,14 @@ then
     exit 1
 fi
 
-if ! ./createGroup.sh $NEXUS_URL $username $password stubhub-public stubhub-releases 
+if ! ./createGroup.sh $NEXUS_URL $username $password dto-public dto-releases 
 then
-    echo "unable to create group stubhub-releases" 1>&2
+    echo "unable to create group dto-releases" 1>&2
     exit 1
 fi
 
-if ! ./createGroup.sh $NEXUS_URL $username $password  stubhub-public-snapshots stubhub-snapshots
+if ! ./createGroup.sh $NEXUS_URL $username $password  dto-public-snapshots dto-snapshots
 then
-    echo "unable to create group stubhub-public-snapshots" 1>&2
+    echo "unable to create group dto-public-snapshots" 1>&2
     exit 1
 fi
