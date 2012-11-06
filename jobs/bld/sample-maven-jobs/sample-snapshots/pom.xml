@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+
+  <parent>
+     <groupId>com.dtolabs.sdp.jobs.bld.sample-maven-jobs</groupId>
+     <artifactId>dtolabs-sdp-jobs-bld-sample-maven-jobs</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>dtolabs-sdp-jobs-bld-sample-maven-jobs-sample-snapshots-rpm</artifactId>
+  <packaging>rpm</packaging>
+  <name>DTO :: sdp :: jobs :: bld-sample-maven-jobs-sample-snapshots-rpm</name>  
+
+
+  <properties>
+    <job.name>sample-snapshots</job.name>
+
+    <job.maven.groupId>com.dtolabs.ecomm</job.maven.groupId>
+    <job.maven.artifactId>dto-ecomm-rpms-sample</job.maven.artifactId>
+
+    <job.project.branch>mybranch</job.project.branch>
+    <job.project.module>sample/</job.project.module>
+
+    <!-- override -->
+<!--
+    <job.p4Port>localhost:1666</job.p4Port>
+-->
+    <job.maven.goals>clean deploy</job.maven.goals>
+  </properties>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/jobs/bld/sample-maven-jobs/sample-snapshots.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/jobs/bld/sample-maven-jobs/sample-snapshots</developerConnection>
+  </scm>
+
+</project>
