@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+    <groupId>com.dtolabs.sdp.third-party</groupId>
+    <artifactId>sdp-thirdparty</artifactId>
+    <version>1.1.0</version>
+  </parent>
+
+  <groupId>com.puppetlabs</groupId>
+  <artifactId>mcollective</artifactId>
+  <version>2.2.0-1.el6.noarch</version>
+  <packaging>pom</packaging>
+  <name>DTO :: thirdparty :: activemq :: rpm</name>
+
+  <build>
+    <plugins>
+       <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.7</version>
+          <executions>
+             <execution>
+                <id>rpm</id>
+                <phase>package</phase>
+                <goals>
+                   <goal>attach-artifact</goal>
+                </goals>
+                <configuration>
+                   <artifacts>
+                      <artifact>
+                         <file>SOURCES/${project.artifactId}-${project.version}.rpm</file>
+                         <type>rpm</type>
+                      </artifact>
+                   </artifacts>
+                </configuration>
+             </execution>
+          </executions>
+       </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/third-party/mcollective-common.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/third-party/mcollective-common.git</developerConnection>
+  </scm>
+
+</project>

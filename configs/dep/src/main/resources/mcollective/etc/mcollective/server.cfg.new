@@ -1,0 +1,35 @@
+topicprefix = /topic/
+main_collective = mcollective
+collectives = mcollective
+libdir = /usr/libexec/mcollective
+logfile = /var/log/mcollective.log
+loglevel = info
+daemonize = 1
+
+registration = Meta
+registerinterval = 300
+
+classesfile = /var/lib/puppet/classes.txt
+direct_addressing = 1
+
+# Plugins
+securityprovider = psk
+plugin.psk = ${package.mcollective.plugin.psk}
+
+connector = stomp
+plugin.stomp.host = ${package.mcollective.stomp.host}
+plugin.stomp.port = ${package.mcollective.stomp.port}
+plugin.stomp.user = ${package.mcollective.stomp.user}
+plugin.stomp.password = ${package.mcollective.stomp.password}
+
+# Facts
+factsource = yaml
+plugin.yaml = /etc/mcollective/facts.yaml
+
+#mongodb configuration
+plugin.registration.mongohost = localhost
+plugin.registration.mongodb = puppet
+plugin.registration.collection = nodes
+plugin.registration.criticalage = 3600
+
+default_discovery_method = mongo

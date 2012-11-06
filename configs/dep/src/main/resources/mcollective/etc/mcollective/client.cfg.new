@@ -1,0 +1,23 @@
+topicprefix = /topic/
+main_collective = mcollective
+collectives = mcollective
+libdir = /usr/libexec/mcollective
+logger_type = console
+loglevel = warn
+
+direct_addressing = 1
+
+# Plugins
+securityprovider = psk
+plugin.psk = ${package.mcollective.plugin.psk}
+
+connector = stomp
+plugin.stomp.host = ${package.mcollective.stomp.host}
+plugin.stomp.port = ${package.mcollective.stomp.port}
+plugin.stomp.user = ${package.mcollective.stomp.user}
+plugin.stomp.password = ${package.mcollective.stomp.password}
+
+# Facts
+factsource = yaml
+plugin.yaml = /etc/mcollective/facts.yaml
+

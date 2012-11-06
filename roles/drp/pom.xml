@@ -1,0 +1,291 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+    <groupId>com.dtolabs.sdp.roles</groupId>
+    <artifactId>dtolabs-sdp-roles</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dtolabs-sdp-roles-drp-rpm</artifactId>
+  <packaging>rpm</packaging>
+  <name>DTO :: sdp :: roles :: drp-rpm</name>
+
+  <!-- 
+     following plugins have been configured into the SOURCES/plugins directory
+       nexus-rundeck-plugin-1.2.2.3-SNAPSHOT:   https://github.com/downloads/vbehar/nexus-rundeck-plugin/nexus-rundeck-plugin-1.2.2.3-SNAPSHOT-bundle.zip
+          extracted to:  
+              SOURCES/plugins/nexus-rundeck-plugin-1.2.2.3-SNAPSHOT
+
+       nexus-yum-plugin-2.0.2.1: http://nexus-yum-plugin.googlecode.com/files/nexus-yum-plugin-2.0.2.1-bundle.zip
+           extracted to:
+              SOURCES/plugins/nexus-yum-plugin-2.0.2.1
+    -->
+
+
+  <properties>
+    <!-- properties referring to the actual jenkins distribution that we are converting to an rpm -->
+
+    <install.package.version>2.0.6</install.package.version>
+    <install.package.name>nexus</install.package.name>
+
+    <service.name>nexus</service.name>
+    <service.user>nexus</service.user>
+    <service.group>nexus</service.group>
+
+    <!-- default location of the jenkins home directory -->
+    <service.homeDir>/var/lib/nexus</service.homeDir>
+
+    <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
+    <rpm.version>${project.version}</rpm.version>
+
+     <!-- rpm.release is not set and will default to the value of 1 for versioned releases.   We should not use rpm.release for SNAPSHOTS as it will 
+          remove the SNAPSHOT behavior when producing the versioned rpm -->
+    <arch>x86_64</arch>
+
+
+  </properties>
+
+  <build>
+
+    <outputDirectory>target/rpm</outputDirectory>
+
+    <plugins>
+
+
+      <!-- extract the committed SOURCES nexus tgz distribution into target/resources for rpm packaging -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>extract-source</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>bash</executable>
+          <arguments>
+            <argument>-c</argument>
+            <argument>mkdir -p target/resources; tar -C ${basedir}/target/resources -zxf ${basedir}/SOURCES/${install.package.name}-${install.package.version}-bundle.tgz</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+
+      <!-- map in the additional init script for linux service support -->
+      <plugin>
+         <artifactId>maven-resources-plugin</artifactId>
+         <executions>
+            <execution>
+               <id>copy-init-resources</id>
+               <phase>process-resources</phase>
+               <goals>
+                  <goal>copy-resources</goal>
+               </goals>
+               <configuration>
+                 <outputDirectory>${basedir}/target/resources</outputDirectory>
+                 <includeEmptyDirs>true</includeEmptyDirs>
+                 <resources>
+                    <resource>
+                       <directory>${basedir}/src/main/resources/init</directory>
+                       <filtering>true</filtering>
+                    </resource>
+                 </resources>
+               </configuration>
+            </execution>
+         </executions>
+      </plugin>
+
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+
+          <!-- defaults to rpm.version property in properties section, may be overridden by external mvn property -->
+          <version>${rpm.version}</version>
+
+          <!-- 
+            if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+            if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+            Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+            and mimics a versioned
+            release.
+            -->
+          <release>${rpm.release}</release>
+
+          <!-- ensure package is noarch -->
+          <needarch>${arch}</needarch>
+
+
+          <!-- we are proxing https requests to jenkins, therefore we need apache's mod_ssl -->
+          <provides>
+            <provide>${service.name} = ${install.package.version}</provide>
+          </provides>
+
+           <!-- 
+             add the nexus account prior to installing package 
+             -->
+           <preinstallScriptlet>
+              <script>
+                 if ! getent passwd ${service.user} &gt; /dev/null
+                 then
+                    echo adding user ${service.user}
+                    /usr/sbin/useradd -d ${service.homeDir} ${service.user}
+                 fi
+                 if ! chmod 755 ${service.homeDir}
+                 then
+                    echo "unable to chmod ${service.homeDir} to 755" 1&gt;&amp;2
+                    exit 1
+                 fi
+              </script>
+           </preinstallScriptlet>
+
+           <!-- configure the nexus service after installation, if needed 
+                if there is no nexus.properties file, create it from the remapped nexus.properties.default file to ensure a basic nexus server will start.
+                This allows a configs/drp configuration package to manage this file directly 
+             -->
+           <postinstallScriptlet>
+              <script>
+                 if ! /sbin/chkconfig --list  nexus  &gt;/dev/null 2&gt;&amp;1
+                 then
+                    if ! /sbin/chkconfig --add nexus &gt;/dev/null 2&gt;&amp;1
+                    then
+                       echo "nexus service not configured"
+                    fi
+                    echo "nexus service configured"
+                 else
+                    echo "nexus service already configured"
+                 fi
+
+                 if [ -f ${service.homeDir}/${install.package.name}-${install.package.version}/conf/nexus.properties.default ]
+                 then
+                    if [ ! -f ${service.homeDir}/${install.package.name}-${install.package.version}/conf/nexus.properties ]
+                    then
+                       cp -f  ${service.homeDir}/${install.package.name}-${install.package.version}/conf/nexus.properties.default  ${service.homeDir}/${install.package.name}-${install.package.version}/conf/nexus.properties
+                       chmod 644 ${service.homeDir}/${install.package.name}-${install.package.version}/conf/nexus.properties
+                       chown ${service.user}:${service.group} ${service.homeDir}/${install.package.name}-${install.package.version}/conf/nexus.properties
+                    fi
+                 fi
+              </script>
+           </postinstallScriptlet>
+
+           <postremoveScriptlet>
+              <script>
+                 rm -rf /var/lib/nexus/nexus-2.0.6 
+                 rm -rf /var/lib/nexus/sonatype-work
+              </script>
+           </postremoveScriptlet>
+
+          <mappings>
+             <!-- map files to nexus home directory and ensure permissions are mananaged for startup files -->
+             <mapping>
+                <directory>${service.homeDir}</directory>
+                <directoryIncluded>false</directoryIncluded>
+                <sources>
+                   <source>
+                      <location>target/resources</location>
+                      <excludes>
+                         <exclude>${install.package.name}-${install.package.version}/bin</exclude>
+                         <exclude>${install.package.name}-${install.package.version}/bin/**</exclude>
+                         <exclude>${install.package.name}-${install.package.version}/conf/nexus.properties</exclude>
+                      </excludes>
+                   </source>
+                </sources>
+                <username>${service.user}</username>
+                <groupname>${service.group}</groupname>
+                <recurseDirectories>true</recurseDirectories>
+             </mapping>
+
+             <!-- Remap the nexus.properties file to nexus.properties.default.  
+                  Since this configuration file belongs to the nexus server package itself and therefore part of the autogenerated package, we remap the filename with a ".default" suffix.
+                  Therefore, the role config package (configs/drp) shall manage this file on an environment specific basis.
+               -->
+             <mapping>
+               <directory>${service.homeDir}</directory>
+                <directoryIncluded>false</directoryIncluded>
+                <sources>
+                   <source>
+                      <location>target/resources/${install.package.name}-${install.package.version}/conf/nexus.properties</location>
+                      <destination>${install.package.name}-${install.package.version}/conf/nexus.properties.default</destination>
+                   </source>
+                </sources>
+             </mapping>
+
+
+             <!-- ensure only architecture specific files are included otherwise the rpm install will fail with file dependencies that do not meet the
+                  target platform -->
+             <mapping>
+                <directory>${service.homeDir}</directory>
+                <directoryIncluded>false</directoryIncluded>
+                <sources>
+                   <source>
+                      <location>target/resources</location>
+                      <includes>
+                         <include>${install.package.name}-${install.package.version}/bin</include>
+                         <include>${install.package.name}-${install.package.version}/bin/nexus</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/linux-x86-64</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/linux-x86-64/wrapper</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/linux-x86-64/nexus</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/license</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/license/LICENSE.txt</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/lib</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/lib/wrapper-*.jar</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/lib/libwrapper-linux-x86-64.so</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/conf</include>
+                         <include>${install.package.name}-${install.package.version}/bin/jsw/conf/wrapper.conf</include>
+                      </includes>
+                   </source>
+                </sources>
+                <username>${service.user}</username>
+                <groupname>${service.group}</groupname>
+                <filemode>755</filemode>
+                <recurseDirectories>false</recurseDirectories>
+             </mapping>
+
+             <!-- bootstrap some plugins that shall be part of this role -->
+             <mapping>
+                <directory>${service.homeDir}/${install.package.name}-${install.package.version}/nexus/WEB-INF/plugin-repository</directory>
+                <directoryIncluded>false</directoryIncluded>
+                <sources>
+                   <source>
+                      <location>SOURCES/plugins</location>
+                   </source>
+                </sources>
+                <username>${service.user}</username>
+                <groupname>${service.group}</groupname>
+                <filemode>755</filemode>
+                <recurseDirectories>true</recurseDirectories>
+             </mapping>
+
+
+             <!-- support service management -->
+            <mapping>
+              <directory>/etc/init.d</directory>
+              <directoryIncluded>false</directoryIncluded>
+              <sources>
+                 <source>
+                    <location>target/resources/etc/init.d/nexus</location>
+                 </source>
+              </sources>
+                <username>root</username>
+                <groupname>root</groupname>
+              <filemode>755</filemode>
+            </mapping>
+
+          </mappings>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/services/sh-nexus-rpm.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/services/sh-nexus-rpm.git</developerConnection>
+  </scm>
+
+</project>

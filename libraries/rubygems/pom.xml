@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+     <groupId>com.dtolabs.sdp.libs</groupId>
+     <artifactId>dtolabs-sdp-libs</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>com.dtolabs.sdp.libs.rubygems</groupId>
+  <artifactId>dtolabs-sdp-libs-rubygems</artifactId>
+  <packaging>pom</packaging>
+  <name>DTO :: sdp :: libraries :: rubygems</name>
+
+  <modules>
+     <module>rubygem-stomp</module>
+  </modules>
+
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/libraries/rubygems.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/libraries/rubygems.git</developerConnection>
+  </scm>
+
+</project>

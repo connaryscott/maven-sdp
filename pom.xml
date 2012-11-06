@@ -11,6 +11,7 @@
 
   <properties>
       <codehaus.plugin.rpm.version>2.1-alpha-2</codehaus.plugin.rpm.version>
+      <maven.plugin.antrun.version>1.7</maven.plugin.antrun.version>
   </properties>
 
   <profiles>
@@ -36,11 +37,11 @@
   <modules>
      <module>libraries</module>
      <module>roles</module>
-<!--
      <module>configs</module>
-     <module>repos</module>
      <module>nodes</module>
      <module>jobs</module>
+<!--
+     <module>repos</module>
 -->
   </modules>
 
@@ -72,6 +73,12 @@
               <fileEncoding>utf-8</fileEncoding>
             </preremoveScriptlet>
           </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>${maven.plugin.antrun.version}</version>
         </plugin>
 
       </plugins>

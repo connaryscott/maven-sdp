@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+     <groupId>com.dtolabs.sdp.nodes</groupId>
+     <artifactId>dtolabs-sdp-nodes</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dtolabs-sdp-nodes-development</artifactId>
+  <packaging>pom</packaging>
+  <name>DTO :: sdp :: nodes :: development</name>
+
+  <modules>
+     <module>localhost</module>
+  </modules>
+
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/nodes/development</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/nodes/development</developerConnection>
+  </scm>
+
+</project>

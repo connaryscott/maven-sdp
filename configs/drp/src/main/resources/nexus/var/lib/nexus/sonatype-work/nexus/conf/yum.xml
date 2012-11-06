@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration>
+    <repositoryCreationTimeout>120</repositoryCreationTimeout>
+    <repositoryOfRepositoryVersionsActive>true</repositoryOfRepositoryVersionsActive>
+    <aliasMappings/>
+    <deleteProcessing>true</deleteProcessing>
+    <delayAfterDeletion>10</delayAfterDeletion>
+</configuration>

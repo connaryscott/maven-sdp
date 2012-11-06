@@ -1,0 +1,49 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+     <groupId>com.dtolabs.sdp.cfg.bld</groupId>
+     <artifactId>dtolabs-sdp-cfg-bld</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>com.dtolabs.sdp.cfg.bld</groupId>
+  <artifactId>dtolabs-sdp-cfg-bld-development-rpm</artifactId>
+  <packaging>rpm</packaging>
+  <name>DTO :: sdp :: cfg :: bld-development-rpm</name>
+
+<!--
+  Example slave override of the parent pom's definition of the jenkins slaves empty set
+   <properties>
+         <service.jenkins.slaves>
+<![CDATA[
+<slave><name>10.249.135.15</name><description>jenkins slave</description><remoteFS>/var/lib/jenkins</remoteFS><numExecutors>4</numExecutors><mode>NORMAL</mode><retentionStrategy class="hudson.slaves.RetentionStrategy$Always"/><launcher class="hudson.plugins.sshslaves.SSHLauncher" plugin="ssh-slaves@0.21"><host>10.249.135.15</host><port>22</port><username>jenkins</username><password>${jenkins.slave.password}</password><jvmOptions></jvmOptions></launcher><label></label><nodeProperties/></slave>
+]]>
+         </service.jenkins.slaves>
+   </properties>
+-->
+
+
+  <build>
+     <plugins>
+        <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>rpm-maven-plugin</artifactId>
+           <configuration>
+              <requires>
+                 <require>mod_ssl</require>
+                 <require>${role.package.name} = ${role.package.version}</require>
+
+                 <!-- jenkins jobs ... -->
+              </requires>
+           </configuration>
+        </plugin>
+     </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/configs/development/bld.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/configs/development/bld.git</developerConnection>
+  </scm>
+
+</project>

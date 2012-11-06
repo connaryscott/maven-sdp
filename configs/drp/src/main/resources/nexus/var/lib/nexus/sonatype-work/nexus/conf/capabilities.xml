@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<capabilitiesConfiguration>
+  <version>2.0.0</version>
+  <capabilities>
+    <capability>
+      <version>1</version>
+      <id>1833e95a29a8</id>
+      <typeId>smartproxy.security.identity</typeId>
+    </capability>
+    <capability>
+      <version>1</version>
+      <id>18345d9fae80</id>
+      <typeId>smartproxy.messaging</typeId>
+    </capability>
+    <capability>
+      <version>1</version>
+      <id>1834e09e3a75</id>
+      <enabled>false</enabled>
+      <typeId>smartproxy.messaging.secure-connector</typeId>
+    </capability>
+    <capability>
+      <version>1</version>
+      <id>1834e6f270a5</id>
+      <typeId>OutreachManagementCapability</typeId>
+      <properties>
+        <property>
+          <key>baseUrl</key>
+          <value>http://links.sonatype.com/products/nexus/outreach</value>
+        </property>
+      </properties>
+    </capability>
+    <capability>
+      <version>1</version>
+      <id>1834e7b7832b</id>
+      <typeId>OutreachMarkerCapability</typeId>
+    </capability>
+  </capabilities>
+</capabilitiesConfiguration>

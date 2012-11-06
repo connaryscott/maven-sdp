@@ -1,0 +1,64 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+     <groupId>com.dtolabs.sdp.nodes</groupId>
+      <artifactId>dtolabs-sdp-nodes-development</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dtolabs-sdp-nodes-localhost-rpm</artifactId>
+  <packaging>rpm</packaging>
+  <name>DTO :: sdp :: nodes :: localhost-rpm</name>
+
+ <properties>
+    <rpm.version>${project.version}</rpm.version>
+    <arch>noarch</arch>
+ </properties>
+
+ <build>
+
+    <outputDirectory>target/rpm</outputDirectory>
+
+    <plugins>
+
+      <!-- -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+          <requires>
+             <require>centos-release = 6-2.el6.centos.7</require>
+             <require>dtolabs-sdp-cfg-bld-development-rpm = 1.0.0</require>
+             <require>dtolabs-sdp-cfg-dep-development-rpm = 1.0.0</require>
+          </requires>
+
+          <provides>
+            <provide>${project.artifactId}</provide>
+          </provides>
+  
+          <mappings>
+            <mapping>
+               <directory>/tmp</directory>
+               <directoryIncluded>false</directoryIncluded>
+            </mapping>
+          </mappings>
+
+          <version>${rpm.version}</version>
+
+          <release>${rpm.release}</release>
+
+          <needarch>${arch}</needarch>
+
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/nodes/localhost.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/nodes/localhost.git</developerConnection>
+  </scm>
+
+</project>

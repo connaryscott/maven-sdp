@@ -1,0 +1,354 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+    <groupId>com.dtolabs.sdp.cfg</groupId>
+    <artifactId>dtolabs-sdp-cfg</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>com.dtolabs.sdp.cfg.dep</groupId>
+  <artifactId>dtolabs-sdp-cfg-dep</artifactId>
+  <packaging>pom</packaging>
+  <name>DTO :: sdp :: cfg :: dep</name>
+
+  <modules>
+     <module>${sdp.environment}</module>
+  </modules>
+
+  <properties>
+
+    <!-- common property -->
+    <role.package.name>dtolabs-sdp-roles-dep-rpm</role.package.name>
+
+    <!-- dependencies may not have a snapshot in it -->
+    <role.package.version>1.0.0</role.package.version>
+
+
+    <!-- common properties, may be overridden -->
+    <service.rundeck.user>rundeck</service.rundeck.user>
+    <service.rundeck.group>rundeck</service.rundeck.group>
+
+      <!-- change the context path of the app to /rundeck for the apache proxy -->
+      <!-- see:  http://www.jaimegago.com/running-rundeck-behind-apache-using-mod_proxy-on-centosrhel6/ for mod_proxy/apache 
+               in /etc/rundeck/profile, add:
+                   -Dserver.web.context=/rundeck
+        -->
+    <!-- common property, may be overridden -->
+    <service.rundeck.prefix>/rundeck</service.rundeck.prefix>
+
+    <!-- common property, may be overridden -->
+    <!-- override the rundeck application port which we configure apache to proxy to, this port is not used by a rundeck user -->
+    <service.rundeck.application-port>4440</service.rundeck.application-port>
+
+    <!-- bind the application port to the localhost since we will be using apache -->
+    <!-- environment specific property -->
+    <!-- common property, may be overridden -->
+    <service.rundeck.application-host>localhost</service.rundeck.application-host>
+
+    <package.mcollective.user>root</package.mcollective.user>
+    <package.mcollective.group>root</package.mcollective.group>
+    <package.mcollective.stomp.host>localhost</package.mcollective.stomp.host>
+    <package.mcollective.stomp.port>61613</package.mcollective.stomp.port>
+    <package.mcollective.stomp.user>mcollective</package.mcollective.stomp.user>
+    <package.mcollective.stomp.password>secret</package.mcollective.stomp.password>
+    <package.mcollective.plugin.psk>12345678</package.mcollective.plugin.psk>
+
+
+    <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
+    <rpm.version>${project.version}</rpm.version>
+
+    <!-- 
+            if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+            if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+            Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+            and mimics a versioned
+            release.
+     -->
+     <release>${rpm.release}</release>
+
+      <!-- rpm.release is not set and will default to the value of 1 for versioned releases.   We should not use rpm.release for SNAPSHOTS as it will 
+          remove the SNAPSHOT behavior when producing the versioned rpm -->
+    <arch>noarch</arch>
+
+  </properties>
+
+
+  <profiles>
+     <profile>
+        <id>parent</id>
+        <activation>
+           <file>
+              <exists>src/main/assemblies/distribution-resources.xml</exists>
+           </file>
+        </activation>
+
+        <build>     
+           <plugins> 
+              <plugin> 
+               <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                   <execution>
+                      <id>make-resources-assembly</id>
+                      <phase>package</phase>
+                      <goals>
+                         <goal>single</goal>
+                      </goals>
+                      <configuration>
+                         <attach>true</attach>
+                         <descriptors>
+                             <descriptor>src/main/assemblies/distribution-resources.xml</descriptor>
+                         </descriptors>
+                       </configuration>
+                    </execution>
+                </executions>
+              </plugin> 
+           </plugins> 
+        </build>     
+
+
+     </profile>
+
+     <profile>
+        <id>child</id>
+        <activation>
+           <file>
+              <missing>src/main/assemblies/distribution-resources.xml</missing>
+           </file>
+        </activation>
+
+        <dependencies>
+           <dependency>
+              <groupId>${project.parent.groupId}</groupId>
+              <artifactId>${project.parent.artifactId}</artifactId>
+              <version>${project.parent.version}</version>
+              <classifier>resources</classifier>
+              <type>zip</type>
+           </dependency>
+        </dependencies>
+
+        <build>     
+           <plugins> 
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-dependency-plugin</artifactId>
+               <executions>
+                  <execution>
+                     <id>unpack-resources</id>
+                     <goals>
+                        <goal>unpack-dependencies</goal>
+                    </goals>
+                    <phase>generate-resources</phase>
+                    <configuration>
+                      <outputDirectory>${basedir}/target/resources-output</outputDirectory>
+                      <overWrite>true</overWrite>
+                      <includeArtifactIds>${project.parent.artifactId}</includeArtifactIds>
+                      <includeGroupIds>${project.parent.groupId}</includeGroupIds>
+                      <includeClassifiers>resources</includeClassifiers>
+                      <includeTypes>zip</includeTypes>
+                      <excludeTransitive>true</excludeTransitive>
+                    </configuration>
+                  </execution>
+               </executions>
+             </plugin>
+
+            <!--
+              use the maven resource plugin to manage configurations using system/maven properties for property expansion
+              -->
+            <plugin>
+               <artifactId>maven-resources-plugin</artifactId>
+               <executions>
+                  <!-- copy in http configuration to support apache/ssl proxy -->
+                  <execution>
+                     <id>copy-http-resources</id>
+                     <phase>process-resources</phase>
+                     <goals>
+                        <goal>copy-resources</goal>
+                     </goals>
+                     <configuration>
+                       <outputDirectory>${basedir}/target/resources</outputDirectory>
+                       <includeEmptyDirs>true</includeEmptyDirs>
+                       <resources>
+                          <resource>
+                             <directory>${basedir}/target/resources-output</directory>
+                             <filtering>true</filtering>
+                          </resource>
+                       </resources>
+                     </configuration>
+                  </execution>
+               </executions>
+            </plugin>
+
+
+              <plugin>
+                 <groupId>org.codehaus.mojo</groupId>
+                 <artifactId>rpm-maven-plugin</artifactId>
+                 <configuration>
+
+                   <!-- defaults to rpm.version property in properties section, may be overridden by external mvn property -->
+                   <version>${rpm.version}</version>
+   
+                   <!-- 
+                     if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+                     if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+                     Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+                     and mimics a versioned
+                     release.
+                     -->
+                   <release>${rpm.release}</release>
+   
+                   <!-- ensure package is noarch -->
+                   <needarch>${arch}</needarch>
+   
+                   <provides>
+                      <provide>rundeck-config</provide>
+                   </provides>
+
+                   <!-- we are proxing https requests to rundeck, therefore we need apache's mod_ssl -->
+                   <requires>
+                     <require>${role.package.name} = ${role.package.version}</require>
+                     <require>mod_ssl</require>
+                   </requires>
+   
+                   <mappings>
+                      <!-- map the apache proxy configuration -->
+                      <mapping>
+                         <directory>/etc/httpd/conf.d</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/httpd/etc/httpd/conf.d</location>
+                            </source>
+                         </sources>
+                      </mapping>
+
+                      <mapping>
+                         <directory>/etc/rundeck</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/rundeck/etc/rundeck</location>
+                            </source>
+                         </sources>
+                         <username>${service.rundeck.user}</username>
+                         <groupname>${service.rundeck.group}</groupname>
+                         <filemode>644</filemode>
+                      </mapping>
+
+                      <mapping>
+                         <directory>/var/rundeck</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/rundeck/var/rundeck</location>
+                            </source>
+                         </sources>
+                         <username>${service.rundeck.user}</username>
+                         <groupname>${service.rundeck.group}</groupname>
+                         <filemode>644</filemode>
+                      </mapping>
+
+                      <mapping>
+                         <directory>/etc/mcollective</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/mcollective/etc/mcollective/client.cfg.new</location>
+                            </source>
+                         </sources>
+                         <username>${package.mcollective.user}</username>
+                         <groupname>${package.mcollective.group}</groupname>
+                         <filemode>640</filemode>
+                      </mapping>
+
+                      <mapping>
+                         <directory>/etc/mcollective</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/mcollective/etc/mcollective/server.cfg.new</location>
+                            </source>
+                         </sources>
+                         <username>${package.mcollective.user}</username>
+                         <groupname>${package.mcollective.group}</groupname>
+                         <filemode>640</filemode>
+                      </mapping>
+
+                      <mapping>
+                         <directory>/etc/puppet/manifests</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/puppet/etc/puppet/manifests</location>
+                            </source>
+                         </sources>
+                         <username>root</username>
+                         <groupname>root</groupname>
+                         <filemode>644</filemode>
+                      </mapping>
+
+                      <mapping>
+                         <directory>/etc/puppet/modules</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/puppet/etc/puppet/modules</location>
+                            </source>
+                         </sources>
+                         <username>root</username>
+                         <groupname>root</groupname>
+                         <filemode>755</filemode>
+                      </mapping>
+
+                   </mappings>
+    <!-- TODO this shall be replaced by a proper configuration, issue is that mcollective package owns this package directly :( -->
+           <postinstallScriptlet>
+              <script>
+                 if ! cp -f /etc/mcollective/client.cfg.new /etc/mcollective/client.cfg
+                 then
+                    echo "unable to copy  /etc/mcollective/client.cfg.new to /etc/mcollective/client.cfg" 1&gt;&amp;2
+                    exit 1
+                 fi
+                 chown ${package.mcollective.user}:${package.mcollective.group} /etc/mcollective/client.cfg
+                 chmod 640 /etc/mcollective/client.cfg
+
+                 if ! cp -f /etc/mcollective/server.cfg.new /etc/mcollective/server.cfg
+                 then
+                    echo "unable to copy  /etc/mcollective/server.cfg.new to /etc/mcollective/server.cfg" 1&gt;&amp;2
+                    exit 1
+                 fi
+                 chown ${package.mcollective.user}:rundeck /etc/mcollective/client.cfg
+                 chmod 640 /etc/mcollective/server.cfg
+
+                 if ! /sbin/chkconfig mcollective on
+                 then
+                    echo "unable to configure mcollective runlevel via chkconfig" 1&gt;&amp;2
+                    exit 1
+                 fi
+
+                 if ! /sbin/chkconfig httpd on
+                 then
+                    echo "unable to configure httpd runlevel via chkconfig" 1&gt;&amp;2
+                    exit 1
+                 fi
+
+              </script>
+           </postinstallScriptlet>
+                 </configuration>
+
+              </plugin> 
+
+           </plugins> 
+        </build>     
+
+     </profile>
+  </profiles>
+
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/configs/dep.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/configs/dep.git</developerConnection>
+  </scm>
+
+</project>

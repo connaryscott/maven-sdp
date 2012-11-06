@@ -2,20 +2,22 @@
   <modelVersion>4.0.0</modelVersion> 
 
   <parent>
-    <groupId>com.dtolabs.sdp</groupId>
-    <artifactId>dtolabs-sdp</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+     <groupId>com.dtolabs.sdp</groupId>
+     <artifactId>dtolabs-sdp</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
   <groupId>com.dtolabs.sdp.libs</groupId>
   <artifactId>dtolabs-sdp-libs</artifactId>
-
   <packaging>pom</packaging>
-  <name>Stubhub :: sdp :: libraries :: parent</name>
+  <name>DTO :: sdp :: libraries :: parent</name>
 
   <modules>
      <module>jenkins-plugins</module>
+     <module>mcollective-plugins</module>
+     <module>rubygems</module>
   </modules>
+
 
   <scm>
     <connection>scm:git:git@github.com:connaryscott/maven-sdp/libraries.git</connection>

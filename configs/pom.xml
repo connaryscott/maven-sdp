@@ -1,0 +1,70 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+     <groupId>com.dtolabs.sdp</groupId>
+     <artifactId>dtolabs-sdp</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>com.dtolabs.sdp.cfg</groupId>
+  <artifactId>dtolabs-sdp-cfg</artifactId>
+  <packaging>pom</packaging>
+  <name>DTO :: sdp :: cfg :: parent</name>
+
+  <modules>
+     <module>drp</module>
+     <module>bld</module>
+<!--
+     <module>bls</module>
+-->
+     <module>dep</module>
+  </modules>
+
+  <properties>
+    <!-- these are local repo settings that we must use to publish to -->
+
+    <!-- jenkins home directory -->
+    <service.jenkins.homeDir>/var/lib/jenkins</service.jenkins.homeDir>
+
+    <service.jenkins.user>jenkins</service.jenkins.user>
+    <service.jenkins.group>jenkins</service.jenkins.group>
+
+    <maven.settings.repo.sdp-releases.name>sdp-releases</maven.settings.repo.sdp-releases.name>
+    <maven.settings.repo.sdp-releases.username>admin</maven.settings.repo.sdp-releases.username>
+    <maven.settings.repo.sdp-releases.password>admin123</maven.settings.repo.sdp-releases.password>
+
+    <maven.settings.repo.sdp-snapshots.name>sdp-snapshots</maven.settings.repo.sdp-snapshots.name>
+    <maven.settings.repo.sdp-snapshots.username>admin</maven.settings.repo.sdp-snapshots.username>
+    <maven.settings.repo.sdp-snapshots.password>admin123</maven.settings.repo.sdp-snapshots.password>
+
+    <maven.settings.repo.sdp-thirdparty.name>sdp-thirdparty</maven.settings.repo.sdp-thirdparty.name>
+    <maven.settings.repo.sdp-thirdparty.username>admin</maven.settings.repo.sdp-thirdparty.username>
+    <maven.settings.repo.sdp-thirdparty.password>admin123</maven.settings.repo.sdp-thirdparty.password>
+
+    <maven.settings.repo.DTO-releases.name>DTO-releases</maven.settings.repo.DTO-releases.name>
+    <maven.settings.repo.DTO-releases.username>admin</maven.settings.repo.DTO-releases.username>
+    <maven.settings.repo.DTO-releases.password>admin123</maven.settings.repo.DTO-releases.password>
+    <maven.settings.repo.DTO-releases.url>https://mvnrepository.stubcorp.dev/nexus/content/repositories/DTO-releases</maven.settings.repo.DTO-releases.url>
+
+    <maven.settings.repo.DTO-snapshots.name>DTO-snapshots</maven.settings.repo.DTO-snapshots.name>
+    <maven.settings.repo.DTO-snapshots.username>admin</maven.settings.repo.DTO-snapshots.username>
+    <maven.settings.repo.DTO-snapshots.password>admin123</maven.settings.repo.DTO-snapshots.password>
+    <maven.settings.repo.DTO-snapshots.url>https://mvnrepository.stubcorp.dev/nexus/content/repositories/DTO-snapshots</maven.settings.repo.DTO-snapshots.url>
+
+
+    <!-- these are central repo settings that we must use to consume from -->
+
+    <maven.settings.centralrepo.DTO-snapshots.name>DTO-public-snapshots</maven.settings.centralrepo.DTO-snapshots.name>
+    <maven.settings.centralrepo.DTO-snapshots.url>https://mvnrepository.stubcorp.dev/nexus/content/repositories/DTO-public-snapshots</maven.settings.centralrepo.DTO-snapshots.url>
+
+    <maven.settings.centralrepo.DTO-releases.name>DTO-public</maven.settings.centralrepo.DTO-releases.name>
+    <maven.settings.centralrepo.DTO-releases.url>https://mvnrepository.stubcorp.dev/nexus/content/repositories/DTO-public</maven.settings.centralrepo.DTO-releases.url>
+  </properties>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/configs.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/configs.git</developerConnection>
+  </scm>
+
+</project>

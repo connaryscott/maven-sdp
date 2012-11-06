@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <!-- this rubygems package, obtained from fedora core: http://mirror.pnl.gov/fedora/linux/updates/16/x86_64/rubygems-1.8.11-3.fc16.1.noarch.rpm,
+       is compatible with a centos 6.2 O/S 
+    -->
+
+  <parent>
+     <groupId>com.dtolabs.sdp.third-party</groupId>
+    <artifactId>sdp-thirdparty</artifactId>
+     <version>1.1.0</version>
+  </parent>
+
+  <groupId>org.rubygems</groupId>
+  <artifactId>rubygems</artifactId>
+  <version>1.8.11-3.fc16.1.noarch</version>
+  <packaging>pom</packaging>
+  <name>DTO :: org :: rubygems :: rpm</name>
+
+  <build>
+    <plugins>
+       <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <executions>
+             <execution>
+                <id>rpm</id>
+                <phase>package</phase>
+                <goals>
+                   <goal>attach-artifact</goal>
+                </goals>
+                <configuration>
+                   <artifacts>
+                      <artifact>
+                         <file>SOURCES/${project.artifactId}-${project.version}.rpm</file>
+                         <type>rpm</type>
+                      </artifact>
+                   </artifacts>
+                </configuration>
+             </execution>
+          </executions>
+       </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/third-party/jenkins.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/third-party/jenkins.git</developerConnection>
+  </scm>
+
+</project>

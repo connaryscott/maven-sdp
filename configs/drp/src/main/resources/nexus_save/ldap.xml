@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ldapConfiguration>
+  <version>2.0.1</version>
+  <servers>
+    <server>
+      <id>2244802f47c0d</id>
+      <name>stubhub-ldap</name>
+      <connectionInfo>
+        <searchBase>DC=stubcorp,DC=com</searchBase>
+        <systemUsername>SvcAcctNexus@stubcorp.com</systemUsername>
+        <systemPassword>{KFPVq2z9x0IHGZUAf4rRquKLDd8hEPvlUr2ZYTDO8d91QPOefxEFYs4R1zNIgGrA}</systemPassword>
+        <authScheme>simple</authScheme>
+        <protocol>ldaps</protocol>
+        <host>ldap.stubcorp.dev</host>
+        <port>636</port>
+        <connectionTimeout>30</connectionTimeout>
+        <connectionRetryDelay>300</connectionRetryDelay>
+        <cacheTimeout>600</cacheTimeout>
+      </connectionInfo>
+      <userAndGroupConfig>
+        <emailAddressAttribute>mail</emailAddressAttribute>
+        <ldapGroupsAsRoles>true</ldapGroupsAsRoles>
+        <userIdAttribute>sAMAccountName</userIdAttribute>
+        <userObjectClass>user</userObjectClass>
+        <userBaseDn>OU=SanFrancisco,OU=UserAccts</userBaseDn>
+        <userRealNameAttribute>cn</userRealNameAttribute>
+        <userMemberOfAttribute>memberOf</userMemberOfAttribute>
+      </userAndGroupConfig>
+    </server>
+  </servers>
+</ldapConfiguration>

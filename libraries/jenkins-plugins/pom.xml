@@ -8,10 +8,10 @@
   </parent>
 
 
-  <artifactId>dtolabs-sdp-libs-jenkins-plugins</artifactId>
+  <artifactId>dtolabs-sdp-libs-jenkins-plugins-rpm</artifactId>
   <packaging>rpm</packaging>
   <version>1.0.0-SNAPSHOT</version>
-  <name>Stubhub :: sdp :: libraries :: jenkins-plugins</name>
+  <name>DTO :: sdp :: lib :: jenkins-plugins-rpm</name>
 
   <properties>
     <!-- properties referring to the actual jenkins distribution that we are converting to an rpm -->
@@ -87,6 +87,7 @@
           <needarch>${arch}</needarch>
 
 
+          <!-- we are proxing https requests to jenkins, therefore we need apache's mod_ssl -->
           <requires>
             <require>jenkins &gt;= ${jenkins.version.min}</require>
           </requires>

@@ -2,16 +2,16 @@
   <modelVersion>4.0.0</modelVersion> 
 
   <parent>
-    <groupId>com.dtolabs.sdp.third-party</groupId>
-    <artifactId>dtolabs-sdp-thirdparty</artifactId>
-    <version>1.0.0</version>
+     <groupId>com.dtolabs.sdp.third-party</groupId>
+     <artifactId>sdp-thirdparty</artifactId>
+     <version>1.1.0</version>
   </parent>
 
   <groupId>com.oracle</groupId>
   <artifactId>jdk</artifactId>
   <version>1.6.0_24-20110926.x86_64</version>
   <packaging>pom</packaging>
-  <name>Stubhub :: thirdparty :: jdk :: rpm</name>
+  <name>DTO :: thirdparty :: jdk :: rpm</name>
 
   <build>
     <plugins>

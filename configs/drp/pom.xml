@@ -1,0 +1,322 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+    <groupId>com.dtolabs.sdp.cfg</groupId>
+    <artifactId>dtolabs-sdp-cfg</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>com.dtolabs.sdp.cfg.drp</groupId>
+  <artifactId>dtolabs-sdp-cfg-drp</artifactId>
+  <packaging>pom</packaging>
+  <name>DTO :: sdp :: cfg :: drp</name>
+
+  <modules>
+     <module>${sdp.environment}</module>
+  </modules>
+
+  <properties>
+
+    <!-- common property -->
+    <role.package.name>dtolabs-sdp-roles-drp-rpm</role.package.name>
+
+    <!-- dependencies may not have a snapshot in it -->
+    <role.package.version>1.0.0</role.package.version>
+
+
+    <!-- common properties, may be overridden -->
+    <service.nexus.user>nexus</service.nexus.user>
+    <service.nexus.group>nexus</service.nexus.group>
+
+    <!-- common property, may be overridden -->
+    <service.nexus.prefix>/nexus</service.nexus.prefix>
+
+    <!-- common property, may be overridden -->
+    <!-- override the nexus application port which we configure apache to proxy to, this port is not used by a nexus user -->
+    <service.nexus.application-port>8080</service.nexus.application-port>
+
+    <!-- bind the application port to the localhost since we will be using apache -->
+    <!-- environment specific property -->
+    <!-- common property, may be overridden -->
+    <service.nexus.application-host>localhost</service.nexus.application-host>
+
+
+    <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
+    <rpm.version>${project.version}</rpm.version>
+
+    <!-- 
+            if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+            if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+            Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+            and mimics a versioned
+            release.
+     -->
+
+      <!-- rpm.release is not set and will default to the value of 1 for versioned releases.   We should not use rpm.release for SNAPSHOTS as it will 
+          remove the SNAPSHOT behavior when producing the versioned rpm -->
+    <arch>noarch</arch>
+    <release>${rpm.release}</release>
+
+  </properties>
+
+
+  <profiles>
+     <profile>
+        <id>parent</id>
+        <activation>
+           <file>
+              <exists>src/main/assemblies/distribution-resources.xml</exists>
+           </file>
+        </activation>
+
+        <build>     
+           <plugins> 
+              <plugin> 
+               <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                   <execution>
+                      <id>make-resources-assembly</id>
+                      <phase>package</phase>
+                      <goals>
+                         <goal>single</goal>
+                      </goals>
+                      <configuration>
+                         <attach>true</attach>
+                         <descriptors>
+                             <descriptor>src/main/assemblies/distribution-resources.xml</descriptor>
+                         </descriptors>
+                       </configuration>
+                    </execution>
+                </executions>
+              </plugin> 
+           </plugins> 
+        </build>     
+
+
+     </profile>
+
+     <profile>
+        <id>child</id>
+        <activation>
+           <file>
+              <missing>src/main/assemblies/distribution-resources.xml</missing>
+           </file>
+        </activation>
+
+        <dependencies>
+           <dependency>
+              <groupId>${project.parent.groupId}</groupId>
+              <artifactId>${project.parent.artifactId}</artifactId>
+              <version>${project.parent.version}</version>
+              <classifier>resources</classifier>
+              <type>zip</type>
+           </dependency>
+        </dependencies>
+
+        <build>     
+           <plugins> 
+
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-dependency-plugin</artifactId>
+               <executions>
+                  <execution>
+                     <id>unpack-resources</id>
+                     <goals>
+                        <goal>unpack-dependencies</goal>
+                    </goals>
+                    <phase>generate-resources</phase>
+                    <configuration>
+                      <outputDirectory>${basedir}/target/resources-output</outputDirectory>
+                      <overWrite>true</overWrite>
+                      <includeArtifactIds>${project.parent.artifactId}</includeArtifactIds>
+                      <includeGroupIds>${project.parent.groupId}</includeGroupIds>
+                      <includeClassifiers>resources</includeClassifiers>
+                      <includeTypes>zip</includeTypes>
+                      <excludeTransitive>true</excludeTransitive>
+                    </configuration>
+                  </execution>
+               </executions>
+             </plugin>
+
+            <!--
+              use the maven resource plugin to manage configurations using system/maven properties for property expansion
+              -->
+            <plugin>
+               <artifactId>maven-resources-plugin</artifactId>
+               <executions>
+                  <!-- copy in http configuration to support apache/ssl proxy -->
+                  <execution>
+                     <id>copy-http-resources</id>
+                     <phase>process-resources</phase>
+                     <goals>
+                        <goal>copy-resources</goal>
+                     </goals>
+                     <configuration>
+                       <outputDirectory>${basedir}/target/resources</outputDirectory>
+                       <includeEmptyDirs>true</includeEmptyDirs>
+                       <resources>
+                          <resource>
+                             <directory>${basedir}/target/resources-output</directory>
+                             <filtering>true</filtering>
+                          </resource>
+                       </resources>
+                     </configuration>
+                  </execution>
+               </executions>
+            </plugin>
+
+
+              <plugin>
+                 <groupId>org.codehaus.mojo</groupId>
+                 <artifactId>rpm-maven-plugin</artifactId>
+                 <configuration>
+
+                   <!-- defaults to rpm.version property in properties section, may be overridden by external mvn property -->
+                   <version>${rpm.version}</version>
+   
+                   <!-- 
+                     if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+                     if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+                     Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+                     and mimics a versioned
+                     release.
+                     -->
+                   <release>${rpm.release}</release>
+   
+                   <!-- ensure package is noarch -->
+                   <needarch>${arch}</needarch>
+   
+                   <!-- we are proxing https requests to nexus, therefore we need apache's mod_ssl -->
+                   <requires>
+                     <require>${role.package.name} = ${role.package.version}</require>
+                     <require>mod_ssl</require>
+                     <require>apr</require>
+                   </requires>
+   
+                   <mappings>
+                      <!-- map the apache proxy configuration -->
+                      <mapping>
+                         <directory>/etc/httpd/conf.d</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/httpd/etc/httpd/conf.d</location>
+                            </source>
+                         </sources>
+                         <username>root</username>
+                         <groupname>root</groupname>
+                         <filemode>644</filemode>
+                      </mapping>
+
+                      <!-- map the nexus configuration -->
+                      <mapping>
+                         <directory>/var/lib/nexus/nexus-2.0.6/conf</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/nexus/var/lib/nexus/nexus-2.0.6/conf</location>
+                            </source>
+                         </sources>
+                         <username>${service.nexus.user}</username>
+                         <groupname>${service.nexus.group}</groupname>
+                         <filemode>644</filemode>
+                      </mapping>
+
+		      <!-- map the nexus sonatype-work configuration 
+                           NOTE:  this configuraiton is typically generated by nexus after startup.
+                                  we capture this configuraiton in a reference install where the nexus/conf files must be captured here.
+                        -->
+                      <mapping>
+                         <directory>/var/lib/nexus/sonatype-work/nexus/conf</directory>
+                         <directoryIncluded>true</directoryIncluded>
+                         <username>${service.nexus.user}</username>
+                         <groupname>${service.nexus.group}</groupname>
+                         <filemode>755</filemode>
+                      </mapping>
+
+                      <mapping>
+                         <directory>/var/lib/nexus/sonatype-work/nexus/conf</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/nexus/var/lib/nexus/sonatype-work/nexus/conf</location>
+                            </source>
+                         </sources>
+                         <username>${service.nexus.user}</username>
+                         <groupname>${service.nexus.group}</groupname>
+                         <filemode>644</filemode>
+                      </mapping>
+
+<!--
+                      keystore is work in progress, we will manage this and ldap later
+                      <mapping>
+                         <directory>/var/lib/nexus/sonatype-work/nexus/conf/keystore</directory>
+                         <directoryIncluded>true</directoryIncluded>
+                         <username>${service.nexus.user}</username>
+                         <groupname>${service.nexus.group}</groupname>
+                         <filemode>755</filemode>
+                      </mapping>
+
+                      <mapping>
+                         <directory>/var/lib/nexus/sonatype-work/nexus/conf/keystore</directory>
+                         <directoryIncluded>false</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/nexus/var/lib/nexus/sonatype-work/nexus/conf/keystore</location>
+                            </source>
+                         </sources>
+                         <username>${service.nexus.user}</username>
+                         <groupname>${service.nexus.group}</groupname>
+                         <filemode>644</filemode>
+                      </mapping>
+-->
+
+
+                      <!-- map licensing configuration -->
+<!--
+only necessary for nexus-professional
+                      <mapping>
+                         <directory>/var/lib/nexus/.java</directory>
+                         <directoryIncluded>true</directoryIncluded>
+                         <sources>
+                            <source>
+                               <location>target/resources/nexus/var/lib/nexus/.java</location>
+                            </source>
+                         </sources>
+                         <username>${service.nexus.user}</username>
+                         <groupname>${service.nexus.group}</groupname>
+                         <filemode>755</filemode>
+                      </mapping>
+-->
+                   </mappings>
+                   <postinstallScriptlet>
+                      <script>
+                         if ! /sbin/chkconfig httpd on
+                         then
+                            echo "unable to configure httpd runlevel via chkconfig" 1&gt;&amp;2
+                            exit 1
+                         fi
+                      </script>
+                   </postinstallScriptlet>
+
+                   <!--TODO: post uninstall, rm -rf /var/lib/nexus/nexus-2.0.6 /var/lib/nexus/sonatype-work/nexus/{xxx,yyy,...} -->
+                 </configuration>
+
+              </plugin> 
+
+           </plugins> 
+        </build>     
+
+     </profile>
+  </profiles>
+
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/configs/drp.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/configs/drp.git</developerConnection>
+  </scm>
+
+</project>

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# chkconfig: 345 20 80
+# description: Starts and stops the nexus server
+
+export RUN_AS_USER=${service.user}
+
+exec ${service.homeDir}/${install.package.name}-${install.package.version}/bin/nexus $*

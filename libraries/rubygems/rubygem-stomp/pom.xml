@@ -1,0 +1,158 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <!-- this pom will take the rubygem-stomp gem distribution and package it into an rpm.   The built rpm, when installed, will install the necessary files to satisfy the rubygems utility 
+
+       The gem was "fetched" using the "gem fetch" command as follows:
+          cd SOURCES/gems
+          gem fetch stomp -v 1.2.5
+          ls stomp-1.2.5.gem
+          stomp-1.2.5.gem
+    -->
+
+  <parent>
+     <groupId>com.dtolabs.sdp.libs.rubygems</groupId>
+     <artifactId>dtolabs-sdp-libs-rubygems</artifactId>
+     <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dtolabs-sdp-libs-rubygems-rubygem-stomp-1.2.5-rpm</artifactId>
+  <packaging>rpm</packaging>
+  <name>DTO :: sdp :: lib :: rubygems-rubygem-stomp-rpm</name>
+
+  <properties>
+    <!-- properties referring to the actual ruby gem that we are converting to an rpm -->
+    <rubygem.stomp.version>1.2.5</rubygem.stomp.version>
+    <rubygem.stomp.release>1</rubygem.stomp.release>
+
+    <package.rubygems.name>rubygems</package.rubygems.name>
+    <package.rubygems.version>1.8.11</package.rubygems.version>
+
+    <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
+    <rpm.version>${project.version}</rpm.version>
+
+    <arch>noarch</arch>
+  </properties>
+
+  <build>
+
+    <outputDirectory>target/rpm</outputDirectory>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile</id>
+            <phase>compile</phase>
+            <configuration>
+              <!-- the official stomp gem (stomp-VERSION.gem obtained by the "gem fetch" command) is checked into perforce under SOURCES
+                   which, by definition, is a tarball.  This tarball contains a "data.tar.gz" file which is the payload of the stomp gem itself, which will be converted to an rpm.
+                   We do this by extracting the data.tar.gz into target/SOURCES which so that it will be processed by the maven-rpm-plugin 
+                   We need the specification to be extracted from the gemfile itself, we do this as follows:
+                      gem specification _-ruby SOURCES/gems/stomp-1.2.5.gem  
+                -->
+              <target>
+
+                <mkdir dir="target/resources/specifications"/>
+                <exec executable="bash" output="target/resources/specifications/stomp-${rubygem.stomp.version}.gemspec" failonerror="true">
+                   <arg value="-c"/>
+                   <arg value="gem specification --ruby SOURCES/gems/stomp-${rubygem.stomp.version}.gem"/>
+                </exec>
+
+                <tempfile property="tar.temp.dir" destDir="${java.io.tmpdir}"/>
+                <mkdir dir="${tar.temp.dir}"/>
+                <untar src="SOURCES/gems/stomp-${rubygem.stomp.version}.gem" dest="${tar.temp.dir}">
+                   <patternset>
+                       <include name="data.tar.gz"/>
+                   </patternset>
+                </untar>
+                <mkdir dir="target/resources/gems/stomp-${rubygem.stomp.version}"/>
+                <untar compression="gzip" src="${tar.temp.dir}/data.tar.gz" dest="target/SOURCES/gems/stomp-${rubygem.stomp.version}"/>
+                <delete dir="${tar.temp.dir}"/>
+
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+
+
+
+      <!-- make rubygem-stomp rpm by taking the extracted data.tar.gz data in target/SOURCES as input i
+           this rpm must provide:  rubygemp-stomp package to satisfy mcollective-common and perhaps other packages
+           by convention we also provide rubygem(stomp) script module 
+        -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+
+          <!-- defaults to rpm.version property in properties section, may be overridden by external mvn property -->
+          <version>${rpm.version}</version>
+
+          <!-- 
+            if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+            if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+            Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+            and mimics a versioned
+            release.
+            -->
+          <release>${rpm.release}</release>
+
+          <needarch>${arch}</needarch>
+
+          <!-- we provide rubygem-stomp/rubygem(stomp) since we must satisfy other packages who depend on this -->
+          <provides>
+            <provide>${project.artifactId}</provide>
+            <provide>rubygem-stomp = ${rubygem.stomp.version}-${rubygem.stomp.release}.el6</provide>
+            <provide>rubygem(stomp) = ${rubygem.stomp.version}</provide>
+          </provides>
+ 
+          <requires>
+             <require>${package.rubygems.name} = ${package.rubygems.version}</require>
+          </requires>
+
+           <!-- Look for files located in target/SOURCES/gems/GEMNAME-VERSION to package up the payload of the gem -->
+          <mappings>
+            <mapping>
+              <directory>/usr/lib/ruby/gems/1.8/gems/stomp-${rubygem.stomp.version}</directory>
+              <sources>
+                <source>
+                  <location>target/SOURCES/gems/stomp-${rubygem.stomp.version}</location>
+                </source>
+              </sources>
+            </mapping>
+
+           <!-- Additionally, a gem install is not complete until the gem's specification file is installed 
+                To generate the specification file for a gem, do the following:
+                    gem specification - -ruby SOURCES/gems/stomp-VERSION.gem  > SOURCES/specifications/stomp-VERSION.gemspec
+             -->
+            <mapping>
+              <directory>/usr/lib/ruby/gems/1.8/specifications</directory>
+              <directoryIncluded>false</directoryIncluded>
+              <sources>
+                <source>
+                  <location>target/resources/specifications/stomp-${rubygem.stomp.version}.gemspec</location>
+                </source>
+              </sources>
+              <filemode>644</filemode>
+            </mapping>
+          </mappings>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/libraries/rubygems/rubygem-stomp.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/libraries/rubygems/rubygem-stomp.git</developerConnection>
+  </scm>
+
+</project>

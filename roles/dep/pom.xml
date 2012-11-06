@@ -1,0 +1,171 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion> 
+
+  <parent>
+    <groupId>com.dtolabs.sdp.roles</groupId>
+    <artifactId>dtolabs-sdp-roles</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dtolabs-sdp-roles-dep-rpm</artifactId>
+  <packaging>rpm</packaging>
+  <name>DTO :: sdp :: roles :: dep-rpm</name>
+
+  <properties>
+
+    <package.rundeck.user>rundeck</package.rundeck.user>
+    <package.rundeck.group>rundeck</package.rundeck.group>
+
+    <!-- this is the version of rundeck distribution that we depend on -->
+    <package.rundeck.name>rundeck</package.rundeck.name>
+    <package.rundeck.version>1.4.4-0.94.dev</package.rundeck.version>
+
+    <package.puppet-server.name>puppet-server</package.puppet-server.name>
+    <package.puppet-server.version>3.0.0</package.puppet-server.version>
+
+    <package.ruby-json.name>ruby-json</package.ruby-json.name>
+    <package.ruby-json.version>1.4.6</package.ruby-json.version>
+
+
+    <package.ruby-augeas.name>ruby-augeas</package.ruby-augeas.name>
+    <package.ruby-augeas.version>0.4.1</package.ruby-augeas.version>
+
+    <package.ruby-shadow.name>ruby-shadow</package.ruby-shadow.name>
+    <package.ruby-shadow.version>1.4.1</package.ruby-shadow.version>
+
+    <package.facter.name>facter</package.facter.name>
+    <package.facter.version>1.6.13</package.facter.version>
+
+    <package.rubygem-stomp.name>dtolabs-sdp-libs-rubygems-rubygem-stomp-1.2.5-rpm</package.rubygem-stomp.name>
+    <package.rubygem-stomp.version>1.0.0</package.rubygem-stomp.version>
+
+    <package.mcollective-plugin-mongo-discovery.name>sh-mcollective-plugin-mongo-discovery-rpm</package.mcollective-plugin-mongo-discovery.name>
+    <package.mcollective-plugin-mongo-discovery.version>1.0.0</package.mcollective-plugin-mongo-discovery.version>
+
+    <package.mcollective-plugin-meta-registration.name>sh-mcollective-plugin-meta-registration-rpm</package.mcollective-plugin-meta-registration.name>
+    <package.mcollective-plugin-meta-registration.version>1.0.0</package.mcollective-plugin-meta-registration.version>
+
+    <package.mongodb-server.name>mongo-10gen-server</package.mongodb-server.name>
+    <package.mongodb-server.version>2.2.0-mongodb_1</package.mongodb-server.version>
+
+    <package.mongodb.name>mongo-10gen</package.mongodb.name>
+    <package.mongodb.version>2.2.0-mongodb_1</package.mongodb.version>
+
+    <package.activemq.name>activemq</package.activemq.name>
+    <package.activemq.version>5.5.0</package.activemq.version>
+    <package.activemq.user>activemq</package.activemq.user>
+    <package.activemq.group>activemq</package.activemq.group>
+
+    <package.activemq-info-provider.name>activemq-info-provider</package.activemq-info-provider.name>
+    <package.activemq-info-provider.version>5.5.0</package.activemq-info-provider.version>
+
+    <package.mcollective.name>mcollective</package.mcollective.name>
+    <package.mcollective.version>2.2.0</package.mcollective.version>
+
+    <package.mcollective-common.name>mcollective-common</package.mcollective-common.name>
+    <package.mcollective-common.version>2.2.0</package.mcollective-common.version>
+
+    <package.mcollective-client.name>mcollective-client</package.mcollective-client.name>
+    <package.mcollective-client.version>2.2.0</package.mcollective-client.version>
+
+
+      <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
+    <rpm.version>${project.version}</rpm.version>
+
+      <!-- rpm.release is not set and will default to the value of 1 for versioned releases.   We should not use rpm.release for SNAPSHOTS as it will 
+          remove the SNAPSHOT behavior when producing the versioned rpm -->
+    <arch>noarch</arch>
+
+  </properties>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+
+          <!-- defaults to rpm.version property in properties section, may be overridden by external mvn property -->
+          <version>${rpm.version}</version>
+
+          <!-- 
+            if rpm.release is unset, it defaults to rpm release number to 1 for versioned releases and should be unset when SNAPSHOTS are used.
+            if rpm.release is set, it will set the rpm release number as expected for a versioned release.   
+            Do not set this property when a SNAPSHOT version is specified since the maven timestamping shall be used in this case, otherwise this behavior gets disabled 
+            and mimics a versioned
+            release.
+            -->
+          <release>${rpm.release}</release>
+
+          <!-- ensure package is noarch -->
+          <needarch>${arch}</needarch>
+
+          <provides>
+             <provide>dtolabs-sdp-roles-dep</provide>
+          </provides>
+
+          <requires>
+            <require>${package.rundeck.name} = ${package.rundeck.version}</require>
+
+            <require>${package.puppet-server.name} = ${package.puppet-server.version}</require>
+            <!-- removed version constraint since the facter rpm versioning scheme with ".el6" is causing issues :( -->
+            <require>${package.facter.name}</require>
+            <require>${package.ruby-augeas.name} = ${package.ruby-augeas.version}</require>
+            <require>${package.ruby-shadow.name} = ${package.ruby-shadow.version}</require>
+            <require>${package.ruby-json.name} = ${package.ruby-json.version}</require>
+
+
+             <!-- thirdparty dependencies -->
+            <require>${package.mongodb-server.name} = ${package.mongodb-server.version}</require>
+            <require>${package.mongodb.name} = ${package.mongodb.version}</require>
+
+            <require>${package.activemq.name} = ${package.activemq.version}</require>
+            <require>${package.activemq-info-provider.name} = ${package.activemq-info-provider.version}</require>
+
+            <require>${package.mcollective.name} = ${package.mcollective.version}</require>
+            <require>${package.mcollective-common.name} = ${package.mcollective-common.version}</require>
+            <require>${package.mcollective-client.name} = ${package.mcollective-client.version}</require>
+
+             <!-- service dependencies -->
+            <require>${package.mcollective-plugin-mongo-discovery.name} = ${package.mcollective-plugin-mongo-discovery.version}</require>
+            <require>${package.mcollective-plugin-meta-registration.name} = ${package.mcollective-plugin-meta-registration.version}</require>
+            <require>${package.rubygem-stomp.name} = ${package.rubygem-stomp.version}</require>
+
+          </requires>
+
+          <mappings>
+             <!-- map the apache proxy configuration -->
+             <mapping>
+                <directory>/var/lib/rundeck/libext</directory>
+                <directoryIncluded>false</directoryIncluded>
+                <sources>
+                   <source>
+                      <location>SOURCES/rundeck/var/lib/rundeck/libext/rundeck-mcollective-nodes-1.1-plugin.zip</location>
+                   </source>
+                </sources>
+                <username>${package.rundeck.user}</username>
+                <groupname>${package.rundeck.group}</groupname>
+                <filemode>644</filemode>
+             </mapping>
+
+             <mapping>
+                <directory>/usr/share/activemq/data/kahadb</directory>
+                <directoryIncluded>true</directoryIncluded>
+                <username>${package.activemq.user}</username>
+                <groupname>${package.activemq.group}</groupname>
+                <filemode>775</filemode>
+             </mapping>
+          </mappings>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <connection>scm:git:git@github.com:connaryscott/maven-sdp/roles/dep.git</connection>
+    <developerConnection>scm:git:git@github.com:connaryscott/maven-sdp/roles/dep.git</developerConnection>
+  </scm>
+
+</project>

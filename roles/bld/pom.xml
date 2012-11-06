@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion> 
 
   <parent>
-     <groupId>com.dtolabs.sdp.roles</groupId>
-     <artifactId>dtolabs-sdp-roles</artifactId>
+    <groupId>com.dtolabs.sdp.roles</groupId>
+    <artifactId>dtolabs-sdp-roles</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>dtolabs-sdp-roles-bld</artifactId>
+  <artifactId>dtolabs-sdp-roles-bld-rpm</artifactId>
   <packaging>rpm</packaging>
-  <name>DTO :: sdp :: roles :: bld</name>
+  <name>DTO :: sdp :: roles :: bld-rpm</name>
 
   <properties>
 
@@ -17,12 +17,13 @@
     <package.jenkins.name>jenkins</package.jenkins.name>
     <package.jenkins.version>1.483-1.1</package.jenkins.version>
 
-    <package.jenkins.plugins.name>dtolabs-sdp-libs-jenkins-plugins</package.jenkins.plugins.name>
-    <package.jenkins.plugins.version>${project.version}</package.jenkins.plugins.version>
+    <package.jenkins.plugins.name>dtolabs-sdp-libs-jenkins-plugins-rpm</package.jenkins.plugins.name>
+    <package.jenkins.plugins.version>1.0.0-SNAPSHOT</package.jenkins.plugins.version>
     <package.apache-maven.name>apache-maven</package.apache-maven.name>
 
     <package.jdk.name>jdk</package.jdk.name>
     <package.jdk.version>1.6.0_24</package.jdk.version>
+
 
       <!-- let rpm.version default to the project.version so we can produce artifacts w/o intoducing an external maven property -->
     <rpm.version>${project.version}</rpm.version>
@@ -56,6 +57,10 @@
 
           <!-- ensure package is noarch -->
           <needarch>${arch}</needarch>
+
+          <provides>
+             <provide>dtolabs-sdp-roles-bld</provide>
+          </provides>
 
           <!-- we are proxing https requests to jenkins, therefore we need apache's mod_ssl -->
           <requires>
