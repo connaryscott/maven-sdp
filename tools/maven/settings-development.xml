@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- sdp releases settings.xml -->
+<settings>
+
+    <servers>
+       <!-- sdp-releases and the factory default nexus credentials -->
+       <server>
+           <id>sdp-thirdparty</id>
+           <username>admin</username>
+           <password>admin123</password>
+        </server>
+       <server>
+           <id>sdp-releases</id>
+           <username>admin</username>
+           <password>admin123</password>
+        </server>
+       <server>
+           <id>sdp-snapshots</id>
+           <username>admin</username>
+           <password>admin123</password>
+        </server>
+    </servers>
+
+    <mirrors>
+    </mirrors>
+
+    <!-- we use the localhost since nexus and everything else is on this node, adjust if necessary when scaling to other nodes -->
+    <profiles>
+        <profile>
+            <id>sdp-thirdparty</id>
+            <pluginRepositories>
+
+            </pluginRepositories>
+
+            <repositories>
+               <repository>
+                  <id>sdp-thirdparty</id>
+                  <name>stubhub thirdparty releases</name>
+                  <url>https://localhost/nexus/content/repositories/sdp-thirdparty</url>
+                  <layout>default</layout>
+                  <snapshots>
+                    <enabled>false</enabled>
+                  </snapshots>
+                  <releases>
+                     <enabled>true</enabled>
+                  </releases>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>release</id>
+            <pluginRepositories>
+
+            </pluginRepositories>
+
+            <repositories>
+               <repository>        
+                  <id>sdp-releases</id>        
+                  <name>stubhub sdp releases</name>        
+                  <url>https://localhost/nexus/content/repositories/sdp-releases</url>        
+                  <layout>default</layout>        
+                  <snapshots>            
+                    <enabled>false</enabled>        
+                  </snapshots>        
+                  <releases>            
+                     <enabled>true</enabled>       
+                  </releases>   
+                </repository> 
+            </repositories>
+        </profile>
+
+        <profile>
+            <id>snapshots</id>
+            <pluginRepositories>
+
+            </pluginRepositories>
+
+            <repositories>
+               <repository>        
+                  <id>sdp-snapshots</id>        
+                  <name>stubhub sdp snapshots</name>        
+                  <url>https://localhost/nexus/content/repositories/sdp-snapshots</url>        
+                  <layout>default</layout>        
+                  <snapshots>            
+                    <enabled>true</enabled>        
+                  </snapshots>        
+                  <releases>            
+                     <enabled>false</enabled>       
+                  </releases>   
+                </repository> 
+            </repositories>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>snapshots</activeProfile>
+    </activeProfiles>
+
+    <pluginGroups>
+    </pluginGroups>
+
+
+    <proxies></proxies>
+
+</settings>
